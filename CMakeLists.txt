@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
+if(NOT DEFINED PRISM_VERSION)
+    file(READ "${CMAKE_CURRENT_LIST_DIR}/vcpkg.json" _contents)
+    string(JSON PRISM_VERSION GET "${_contents}" version)
+endif()
 
-project(prism_qt_core VERSION 1.0.0.0 LANGUAGES CXX)
+project(prism_qt_core VERSION ${PRISM_VERSION} LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
@@ -53,6 +57,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE PRISM_QT_CORE_LIBRARY)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 
 
@@ -97,7 +102,16 @@ install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
 
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-
+# vcpkg
+if(EXISTS ${VCPKG_ROOT})
+    execute_process( COMMAND git rev-parse --abbrev-ref HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE GIT_BRANCH_RESULT )
+    execute_process( COMMAND git rev-parse HEAD WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string(REPLACE "_" "-" PORT_NAME "${PROJECT_NAME}")
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg.json.in ${VCPKG_ROOT}/ports/${PORT_NAME}/vcpkg.json @ONLY NEWLINE_STYLE LF)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg.json.in ${PROJECT_SOURCE_DIR}/vcpkg.json @ONLY NEWLINE_STYLE LF)
+    configure_file(${PROJECT_SOURCE_DIR}/cmake/vcpkg_cus_info.json.in ${VCPKG_ROOT}/ports/${PORT_NAME}/vcpkg_cus_info.json @ONLY NEWLINE_STYLE LF)
+    file(COPY ${PROJECT_SOURCE_DIR}/cmake/portfile.cmake DESTINATION ${VCPKG_ROOT}/ports/${PORT_NAME})
+endif()
 
 #
 
@@ -117,6 +131,7 @@ if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}")
     target_link_libraries(tst_${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}
         Catch2::Catch2
+        prism::prism
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Gui
         Qt${QT_VERSION_MAJOR}::Widgets

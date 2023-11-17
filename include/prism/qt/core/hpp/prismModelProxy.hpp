@@ -2,7 +2,7 @@
 #define PRISM_QT_CORE_HPP_PRISMMODELPROXY_H
 
 #include "../prismQt_core_global.h"
-#include <prism/prism.hpp>
+#include "prism/prism.hpp"
 #include <QDebug>
 #include <QObject>
 #include <QVariant>

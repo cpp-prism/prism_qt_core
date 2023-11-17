@@ -1,0 +1,18 @@
+{
+  "name": "prism-qt-core",
+  "version": "1.0.0",
+  "port-version": 1,
+  "description": "prism qt core",
+  "homepage": "https://github.com/cpp-prism/prism_qt_core",
+  "supports": "(windows & !arm & !uwp) | osx | (linux & !arm)",
+  "dependencies": [
+    "catch2",
+    "prism",
+    "prism-container",
+    "prism-qt-modular",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    }
+  ]
+}

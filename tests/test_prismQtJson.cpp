@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_RUNNER
-#include "../prism_qt_core/include/hpp/prismQtJson.hpp"
+#include "include/prism/qt/core/hpp/prismQtJson.hpp"
 #include "tests/models/test_model.h"
 #include <catch2/catch_all.hpp>
-#include <hpp/prismQt.hpp>
+#include "include/prism/qt/core/hpp/prismQt.hpp"
 
 #ifdef _MSC_VER
 #define _AMD64_

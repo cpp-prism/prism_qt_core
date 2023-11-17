@@ -1,6 +1,6 @@
 #ifndef TEST_MODEL_H
 #define TEST_MODEL_H
-#include "include/hpp/prismQt.hpp"
+#include "include/prism/qt/core/hpp/prismQt.hpp"
 #include <QDateTime>
 
 std::time_t initTimestamp(int year, int month, int day, int hour = 0, int min = 0, int second = 0)
