@@ -11,7 +11,10 @@ vcpkg_from_git(
 
 
 #https://learn.microsoft.com/en-us/vcpkg/examples/packaging-github-repos
-vcpkg_cmake_configure( SOURCE_PATH "${SOURCE_PATH}")
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}"
+    OPTIONS -DVCPKG_DISABLE_TEST=ON
+)
 vcpkg_cmake_install()
 
 

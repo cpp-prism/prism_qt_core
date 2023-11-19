@@ -21,6 +21,8 @@ find_package(prism COMPONENTS qt::modular container)
 include_directories(${Qt${QT_VERSION_MAJOR}Quick_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt${QT_VERSION_MAJOR}Core_PRIVATE_INCLUDE_DIRS})
 
+option(VCPKG_DISABLE_TEST "disable run test when vcpkg install " OFF)
+
 add_library(${PROJECT_NAME} SHARED
     include/prism/qt/core/hpp/prismQt.hpp
     include/prism/qt/core/hpp/prismQtJson.hpp
@@ -115,7 +117,7 @@ endif()
 
 #
 
-if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}")
+if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
     find_package(Catch2 REQUIRED)
     include(CTest)
     include(Catch)
