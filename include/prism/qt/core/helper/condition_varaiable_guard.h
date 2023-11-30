@@ -10,7 +10,7 @@ namespace prism::qt::core {
 class PRISMQT_CORE_EXPORT condition_varaiable_guard
 {
 public:
-    condition_varaiable_guard([[maybe_unused]]std::condition_variable* p_cv);
+    condition_varaiable_guard(std::condition_variable* p_cv);
 
     ~condition_varaiable_guard();
 

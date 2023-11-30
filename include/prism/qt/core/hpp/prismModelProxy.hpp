@@ -11,11 +11,19 @@
 
 
 namespace prism::qt::core {
+
+#ifdef __linux
+template<class TV> constexpr inline void get_field_do(QList<const char*>& fns,TV& p_v,QVariant& qv);
+template<class TV> constexpr inline bool set_field_do(QList<const char*>& fns,TV& p_v, QVariant& value);
+template<class TV> constexpr inline bool recurseSetValue(QList<const char*>& fns,TV& p_v, QVariant& value);
+template<class TV> constexpr inline void recurseGetValue(QList<const char*>& fns,TV& p_v,QVariant& qv);
+#endif
+
 template <class T>
 struct has_def_indexer
 {
     template <typename U>
-    static auto test(U* p) -> decltype(U->operator[](0), std::false_type{});
+    static auto test(U* p) -> decltype(p->operator[](0), std::false_type{});
     template <typename U>
     static auto test(...) -> std::true_type;
     static constexpr bool value = decltype(test<T>(nullptr))::value;
@@ -141,6 +149,9 @@ public:
     }
 };
 
+
+
+
 template<class TV> constexpr inline void get_field_do(QList<const char*>& fns,TV& p_v,QVariant& qv)
 {
     if(fns.length()==0)
@@ -198,8 +209,7 @@ template<class TV> constexpr inline bool set_field_do(QList<const char*>& fns,TV
     }
 
 }
-template<class TV>
-constexpr inline bool recurseSetValue(QList<const char*>& fns,TV& p_v, QVariant& value)
+template<class TV> constexpr inline bool recurseSetValue(QList<const char*>& fns,TV& p_v, QVariant& value)
 {
     const char* fname = fns[0];
     fns.removeAt(0);
@@ -236,14 +246,14 @@ constexpr inline bool recurseSetValue(QList<const char*>& fns,TV& p_v, QVariant&
 
     return isUpdate;
 }
-template<class TV>
-constexpr inline void recurseGetValue(QList<const char*>& fns,TV& p_v,QVariant& qv)
+template<class TV> constexpr inline void recurseGetValue(QList<const char*>& fns,TV& p_v,QVariant& qv)
 {
     const char* fname = fns[0];
     fns.removeAt(0);
     if constexpr (prism::utilities::is_specialization<TV,std::weak_ptr>::value)
     {
-        prism::reflection::field_do<0,std::remove_reference_t<std::remove_reference_t<decltype(*p_v.lock())>>(*p_v.lock(),fname,[&](auto& v){
+        using tt = std::remove_reference_t< std::remove_reference_t< decltype(*(p_v.lock())) > >;
+        prism::reflection::field_do<0,tt>(*p_v.lock(),fname,[&](auto& v){
             get_field_do(fns,v,qv);
         });
     }

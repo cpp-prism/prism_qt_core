@@ -17,6 +17,8 @@
 #include <prism/prismJson.hpp>
 #include <prism/qt/modular/interfaces/intf_module.h>
 #include <condition_variable>
+#include <QQmlEngine>
+#include <QtQml>
 
 namespace prism::qt::core{
 prismQt_core::prismQt_core()
@@ -29,7 +31,16 @@ bool prismQt_core::register_types()
 
     qRegisterMetaType<std::condition_variable*>("std::condition_variable*");
 
-    qmlRegisterSingletonInstance<prismBind>("prismCpp", 1, 0, "Bind", new prismBind());
+
+    //注册单例 到qml engine  qt 5.15的语法
+    //qmlRegisterSingletonInstance<prismBind>("prismCpp", 1, 0, "Bind", new prismBind());
+    //注册单例 到qml engine  qt 5.12的  5.15亦可语法
+    qmlRegisterSingletonType<prismBind>("prismCpp",1,0 ,"Bind",[](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+            Q_UNUSED(engine)
+            Q_UNUSED(scriptEngine)
+            return  new prismBind();
+    });
+
     qmlRegisterType<SortFilterProxyModel>("prismCpp", 1, 0, "SortFilterProxyModelCpp");
 
     return true;
