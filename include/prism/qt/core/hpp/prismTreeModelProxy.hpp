@@ -27,7 +27,6 @@ public:
 template<class T>
 class  prismTreeModelProxy : public prismTreeModelProxyBase
 {
-    using value_type =T;
     std::shared_ptr<prismTreeNodeProxy<T>> m_rootNode =nullptr;
 private:
     void privatee_recurseNodeDo(std::shared_ptr<prismTreeNodeProxy<T>> node,std::function<void(std::shared_ptr<prismTreeNodeProxy<T>>)>&& func)
@@ -46,6 +45,7 @@ private:
     }
 
 public:
+    using value_type =T;
     explicit prismTreeModelProxy<T>(QObject *parent = nullptr)
     {
         Q_UNUSED(parent)

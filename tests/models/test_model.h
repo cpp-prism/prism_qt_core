@@ -37,10 +37,11 @@ struct st_test
     QMap<QString, int> my_qmap_k_string{{"key1", 1}};
     QHash<QString, int> my_qhash_qstring{{"key2", 2}};
     std::vector<QString> stdVecQString{"qstring1", "qstring"};
+    QStringList qslist = {"qstr1","qstr2"};
 };
 
 PRISMQT_TYPE(std::chrono::system_clock::time_point)
 PRISMQT_TYPE(st_test)
-PRISM_FIELDS(st_test, my_bool, my_int, my_qlonglong, my_qstring_nll, my_qstring, my_qlist, my_qdatetime, my_time_point, my_qmap_k_string, my_qhash_qstring, stdVecQString)
+PRISM_FIELDS(st_test, my_bool, my_int, my_qlonglong, my_qstring_nll, my_qstring, my_qlist, my_qdatetime, my_time_point, my_qmap_k_string, my_qhash_qstring, stdVecQString,qslist)
 
 #endif // TEST_MODEL_H

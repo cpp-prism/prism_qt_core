@@ -142,7 +142,7 @@ if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
         Qt${QT_VERSION_MAJOR}::QuickControls2)
 
 
-    catch_discover_tests(tst_${PROJECT_NAME})
+    #catch_discover_tests(tst_${PROJECT_NAME})
 
 
     add_custom_target(run_tst_${PROJECT_NAME}

@@ -15,9 +15,10 @@ template<class T>
 class prismTreeNodeProxy :public prismModelProxy<T>,public std::enable_shared_from_this<prismTreeNodeProxy<T>>
 {
     std::weak_ptr<prismTreeNodeProxy<T>> m_parentItem ;
-    std::vector<std::shared_ptr<prismTreeNodeProxy<T>>> m_childItems ;
 
 public:
+    using value_type = T;
+    std::vector<std::shared_ptr<prismTreeNodeProxy<T>>> m_childItems ;
     std::vector<std::shared_ptr<prismTreeNodeProxy<T>>>  childItems(){
         return m_childItems;
     }

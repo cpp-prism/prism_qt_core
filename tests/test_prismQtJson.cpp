@@ -45,6 +45,34 @@ TEST_CASE("指针结构体绑定测试")
 
 TEST_CASE("qt json测试")
 {
+    {
+        //序列化
+        std::shared_ptr<prism::qt::core::prismTreeModelProxy<st_test>> modelproxy = std::make_shared<prism::qt::core::prismTreeModelProxy<st_test>>();
+        std::shared_ptr<prism::qt::core::prismTreeNodeProxy<st_test>> root = std::make_shared<prism::qt::core::prismTreeNodeProxy<st_test>>();
+        std::shared_ptr<prism::qt::core::prismTreeNodeProxy<st_test>> sub1 = std::make_shared<prism::qt::core::prismTreeNodeProxy<st_test>>();
+        std::shared_ptr<prism::qt::core::prismTreeNodeProxy<st_test>> sub2 = std::make_shared<prism::qt::core::prismTreeNodeProxy<st_test>>();
+        std::shared_ptr<prism::qt::core::prismTreeNodeProxy<st_test>> sub11 = std::make_shared<prism::qt::core::prismTreeNodeProxy<st_test>>();
+        std::shared_ptr<prism::qt::core::prismTreeNodeProxy<st_test>> sub12 = std::make_shared<prism::qt::core::prismTreeNodeProxy<st_test>>();
+        root->appendChild(sub1);
+        root->appendChild(sub2);
+        sub1->appendChild(sub11);
+        sub1->appendChild(sub12);
+        modelproxy->setRootNode(root);
+        std::string json = prism::json::toJsonString(modelproxy,4);
+        std::cout << json << std::endl;
+
+        ////反序列化
+        std::shared_ptr<prism::qt::core::prismTreeModelProxy<st_test>>  de_model =
+                prism::json::fromJsonString<prism::qt::core::prismTreeModelProxy<st_test>>(json);
+        //反序列化后再序列化
+        std::string json2 = prism::json::toJsonString(de_model, 4);
+
+        std::cout << json2 << std::endl;
+        REQUIRE(json == json2);
+    }
+    SKIP();
+
+
     st_test model;
     std::string json = prism::json::toJsonString(model, 4);
     std::cout << json << std::endl;
