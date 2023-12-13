@@ -35,6 +35,10 @@ public:
         QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
     }
 
+    void setParentItem(std::shared_ptr<prismTreeNodeProxy<T>> parent)
+    {
+        m_parentItem = parent;
+    }
     std::shared_ptr<prismTreeNodeProxy<T>> parentItem() const
     {
         if(auto sp =m_parentItem.lock())
@@ -56,6 +60,9 @@ public:
         if(it != m_childItems.end())
             m_childItems.erase(it);
     }
+
+
+
     std::shared_ptr<prismTreeNodeProxy<T>> child(int row)
     {
         if(m_childItems.size() > row && row>=0 )

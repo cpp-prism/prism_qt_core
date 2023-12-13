@@ -22,6 +22,10 @@ public:
     }
     virtual ~prismTreeModelProxyBase() {}
     Q_INVOKABLE virtual  QVariant getRowData(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
+    Q_INVOKABLE virtual  QVariant getRowDataSptr(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
+    Q_INVOKABLE virtual  bool removeNode(const QModelIndex& index) { Q_UNUSED(index) return false; }
+    Q_INVOKABLE virtual  bool removeNode(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
+    Q_INVOKABLE virtual  bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row) return false;}
 };
 
 template<class T>
@@ -44,6 +48,26 @@ private:
 
     }
 
+    void traverseModel(void* to_del_node=nullptr, const QModelIndex &parent = QModelIndex())
+    {
+        int rowCount = this->rowCount(parent);
+
+        for (int row = 0; row < rowCount; ++row)
+        {
+            QModelIndex index = this->index(row, 0, parent);
+
+            void* internalPointer =   index.internalPointer();
+            if(internalPointer == to_del_node)
+            {
+                this->removeNode(index);
+                return;
+            }
+
+            if (this->hasChildren(index)) {
+                traverseModel(to_del_node, index);
+            }
+        }
+    }
 public:
     using value_type =T;
     explicit prismTreeModelProxy<T>(QObject *parent = nullptr)
@@ -52,7 +76,7 @@ public:
         QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
     }
     ~prismTreeModelProxy() {}
-    QVariant getRowData(const QModelIndex& index)
+    QVariant getRowData(const QModelIndex& index) override
     {
         if(index.isValid())
         {
@@ -63,6 +87,17 @@ public:
         }
         return QVariant();
     }
+    QVariant getRowDataSptr(const QModelIndex& index) override
+    {
+        prismTreeNodeProxy<T>* parentItem;
+        if(index.parent().isValid())
+            parentItem = static_cast<prismTreeNodeProxy<T>*>(index.parent().internalPointer());
+        else
+            parentItem  = rootNode().get();
+
+        std::shared_ptr<prismTreeNodeProxy<T>> result = parentItem->child(index.row());
+        return QVariant::fromValue(result);
+    }
     void  setRootNode(std::shared_ptr<prismTreeNodeProxy<T>> rootnode)
     {
         this->beginResetModel();
@@ -70,6 +105,15 @@ public:
         m_rootNode = rootnode;
         QQmlEngine::setObjectOwnership(rootnode.get(),QQmlEngine::ObjectOwnership::CppOwnership);
         this->endResetModel();
+    }
+    void recoverRelationship(std::shared_ptr<prismTreeNodeProxy<T>> node)
+    {
+        for(std::shared_ptr<prismTreeNodeProxy<T>> child: node->m_childItems)
+        {
+            QQmlEngine::setObjectOwnership(child.get(),QQmlEngine::ObjectOwnership::CppOwnership);
+            child->setParentItem(node);
+            recoverRelationship(child);
+        }
     }
     std::shared_ptr<prismTreeNodeProxy<T>> rootNode()const
     {
@@ -150,6 +194,70 @@ public:
             return parentItem->childCount();
         else
             return 0;
+    }
+
+    bool insertNode(const QModelIndex& parent,int row,QVariant vnode) override
+    {
+        std::shared_ptr<prismTreeNodeProxy<T>> node = vnode.value<std::shared_ptr<prismTreeNodeProxy<T>>>() ;
+        prismTreeNodeProxy<T>* parentItem;
+        if(parent.isValid())
+            parentItem = static_cast<prismTreeNodeProxy<T>*>(parent.internalPointer());
+        else
+            parentItem  = rootNode().get();
+
+        if(row <0)
+        {
+            qDebug()<< "insert index out of range:" <<row;
+            return false;
+        }
+
+        if(row > parentItem->m_childItems.size())
+        {
+            row = parentItem->m_childItems.size();
+            //qDebug()<< "insert index out of range :" <<row;
+            //return false;
+        }
+
+        beginInsertRows(parent, row, row);
+        parentItem->m_childItems.insert(parentItem->m_childItems.begin()+row,node);
+        endInsertRows();
+        return true;
+    }
+
+    bool removeNode(QVariant to_del_node) override
+    {
+        void* p = *static_cast<void**>(to_del_node.data());
+        traverseModel(p);
+        return true;
+    }
+    bool removeNode(const QModelIndex& index) override
+    {
+        if(!index.isValid())
+        {
+            qDebug()<< "try to remove an invalid qmodelindex";
+            return false;
+        }
+
+        ////递归删除子节点
+        //int rowCount = this->rowCount(index);
+        //for (int row = 0; row < rowCount; ++row)
+        //{
+        //    QModelIndex childindex = this->index(row, 0, index);
+        //    removeNode(childindex);
+        //}
+
+
+        prismTreeNodeProxy<T>* parentItem;
+        if(index.parent().isValid())
+            parentItem = static_cast<prismTreeNodeProxy<T>*>(index.parent().internalPointer());
+        else
+            parentItem  = rootNode().get();
+        beginRemoveRows(index.parent(),index.row(),index.row());
+        //std::shared_ptr<prismTreeNodeProxy<T>> to_del_node = parentItem->child(index.row());
+        //to_del_node.reset();
+        parentItem->m_childItems.erase(parentItem->m_childItems.begin()+index.row());
+        endRemoveRows();
+        return true;
     }
 
     QHash<int,QByteArray> roleNames() const override
