@@ -11,6 +11,7 @@
 
 
 namespace prism::qt::core{
+
 template<class T>
 class prismTreeNodeProxy :public prismModelProxy<T>,public std::enable_shared_from_this<prismTreeNodeProxy<T>>
 {
@@ -18,6 +19,17 @@ class prismTreeNodeProxy :public prismModelProxy<T>,public std::enable_shared_fr
 
 public:
     using value_type = T;
+
+    static bool recurseNodePredict(prismTreeNodeProxy<T>* node ,std::function<bool(prismTreeNodeProxy<T>*)> lambda)
+    {
+        bool result = false;
+        for(std::shared_ptr<prismTreeNodeProxy<T>> item : node->childItems())
+        {
+            result |= recurseNodePredict(item.get(),lambda);
+        }
+        return result |= lambda(node);
+    }
+
     std::vector<std::shared_ptr<prismTreeNodeProxy<T>>> m_childItems ;
     std::vector<std::shared_ptr<prismTreeNodeProxy<T>>>  childItems(){
         return m_childItems;
