@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <QObject>
 #include <QModelIndex>
+#include <stdexcept>
 
 
 namespace prism::qt::core{
@@ -103,5 +104,43 @@ public:
     }
 
 };
+
+template<class T>
+struct prismTreeNodeProxyRef{
+    prismTreeNodeProxyRef(std::shared_ptr<prismTreeNodeProxy<T>> data,std::string keyPath):data_(data),keyPath_(keyPath) {}
+    T* operator ->()
+    {
+        return data_->instance().get();
+    }
+    bool empty()
+    {
+        return data_ == nullptr;
+    }
+    std::shared_ptr<prismTreeNodeProxy<T>> data(){
+        return data_;
+    }
+    const std::string keyPath() const
+    {
+        return keyPath_;
+    }
+    prismTreeNodeProxyRef<T> operator[](std::string key)
+    {
+        if(!data_)
+            return prismTreeNodeProxyRef<T>(nullptr,keyPath_);
+
+        for(std::shared_ptr<prismTreeNodeProxy<T>> item: data_->childItems())
+        {
+			QVariant qv = item->get(QByteArray::fromStdString(keyPath_));
+            std::string getstr = qv.value<QString>().toStdString();
+			if (getstr == key)
+				return prismTreeNodeProxyRef<T>(item, keyPath_);
+        }
+        return prismTreeNodeProxyRef<T>(nullptr,keyPath_);
+    }
+private:
+    std::shared_ptr<prismTreeNodeProxy<T>> data_;
+    std::string keyPath_;
+};
+
 }// namespace prism::qt::core
 #endif // PRISM_QT_CORE_HPP_PRISMTREENODE_HPP
