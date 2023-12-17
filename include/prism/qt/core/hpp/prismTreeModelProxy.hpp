@@ -21,11 +21,21 @@ public:
         Q_UNUSED(parent)
     }
     virtual ~prismTreeModelProxyBase() {}
-    Q_INVOKABLE virtual  QVariant getRowData(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
-    Q_INVOKABLE virtual  QVariant getRowDataSptr(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
-    Q_INVOKABLE virtual  bool removeNode(const QModelIndex& index) { Q_UNUSED(index) return false; }
-    Q_INVOKABLE virtual  bool removeNode(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
-    Q_INVOKABLE virtual  bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row) return false;}
+    Q_INVOKABLE virtual QVariant getRowData(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
+    Q_INVOKABLE virtual QVariant getRowDataSptr(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
+    Q_INVOKABLE virtual QModelIndex getIdexByData(QVariant) {return QModelIndex();}
+    Q_INVOKABLE virtual bool removeNode(const QModelIndex& index) { Q_UNUSED(index) return false; }
+    Q_INVOKABLE virtual bool removeNode(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
+    Q_INVOKABLE virtual bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row) return false;}
+
+//    // QAbstractItemModel interface
+//public:
+//    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+//    QModelIndex parent(const QModelIndex &child) const override;
+//    int rowCount(const QModelIndex &parent) const override;
+//    int columnCount(const QModelIndex &parent) const override;
+//    bool hasChildren(const QModelIndex &parent) const override;
+//    QVariant data(const QModelIndex &index, int role) const override;
 };
 
 template<class T>
@@ -46,6 +56,31 @@ private:
         }
         func(node);
 
+    }
+
+    QModelIndex recurseGetIndex(void* data = nullptr,  QModelIndex parent = QModelIndex())
+    {
+        if (!parent.isValid())
+        {
+            parent = this->createIndex(0,0,rootNode().get());
+        }
+        void* internalPointer = parent.internalPointer();
+        if (internalPointer == data)
+        {
+            return parent;
+        }
+        else
+        {
+            int rowCount = this->rowCount(parent);
+            for (int row = 0; row < rowCount; ++row)
+            {
+                QModelIndex index = this->index(row, 0, parent);
+                QModelIndex result = recurseGetIndex(data, index);
+                if (result.isValid())
+                    return result;  // 如果找到匹配项，则返回
+            }
+        }
+        return QModelIndex();  // 如果未找到匹配项，返回无效的 QModelIndex
     }
 
     void traverseModel(void* to_del_node=nullptr, const QModelIndex &parent = QModelIndex())
@@ -182,8 +217,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override
     {
         prismTreeNodeProxy<T>* parentItem = nullptr;
-        if (parent.column() > 0)
-            return 0;
+        //if (parent.column() > 0)
+        //    return 0;
 
         if (!parent.isValid())
             parentItem = rootNode().get();
@@ -213,7 +248,7 @@ public:
 
         if(row > parentItem->m_childItems.size())
         {
-            row = parentItem->m_childItems.size();
+            row = static_cast<int>(parentItem->m_childItems.size());
             //qDebug()<< "insert index out of range :" <<row;
             //return false;
         }
@@ -224,6 +259,11 @@ public:
         return true;
     }
 
+    QModelIndex getIdexByData(QVariant data) override
+    {
+        void* p = *static_cast<void**>(data.data());
+        return recurseGetIndex(p,QModelIndex());
+    }
     bool removeNode(QVariant to_del_node) override
     {
         void* p = *static_cast<void**>(to_del_node.data());
