@@ -134,6 +134,7 @@ if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
         ${PROJECT_NAME}
         Catch2::Catch2
         prism::prism
+        prism::qt::modular
         Qt${QT_VERSION_MAJOR}::Core
         Qt${QT_VERSION_MAJOR}::Gui
         Qt${QT_VERSION_MAJOR}::Widgets
@@ -141,6 +142,9 @@ if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
         Qt${QT_VERSION_MAJOR}::Qml
         Qt${QT_VERSION_MAJOR}::QuickControls2)
 
+set_target_properties(tst_${PROJECT_NAME}  PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/${CMAKE_SYSTEM_PROCESSOR}
+)
 
     #catch_discover_tests(tst_${PROJECT_NAME})
 

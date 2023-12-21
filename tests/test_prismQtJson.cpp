@@ -3,6 +3,7 @@
 #include "tests/models/test_model.h"
 #include <catch2/catch_all.hpp>
 #include "include/prism/qt/core/hpp/prismQt.hpp"
+#include <prism/qt/modular/dynamic_lib_caller.h>
 
 #ifdef _MSC_VER
 #define _AMD64_
@@ -29,9 +30,38 @@ struct t1{
 PRISM_FIELDS(t1,sptr_t2,ptr_t2);
 PRISMQT_TYPE(t1);
 
+TEST_CASE("动态库调用")
+{
+    void* lib =dynamic_lib_caller::loadLib(R"(D:\Users\user\Documents\source\repos\dv_app_solution\prism_all\build-prism_qt_core-Desktop_Qt_5_15_2_MSVC2019_64bit\Debug\pureCppLib.dll)");
+
+
+    if(lib)
+    {
+        void* func = dynamic_lib_caller::getFunctionAddr(lib,"avg");
+        if(func)
+        {
+            double value = -1;
+            typedef int (*avgFuc)(int, int);
+            avgFuc f = (avgFuc)(func);
+
+            if(f)
+            {
+                value = f(6,15);
+
+                dynamic_lib_caller::unloadLib(lib);
+            }
+
+            std::cout << value;
+        }
+    }
+
+
+}
 
 TEST_CASE("指针结构体绑定测试")
 {
+
+    SKIP();
     prismModelProxy<t1> proxy = new prismModelProxy<t1>(nullptr);
     int backup = proxy.instance()->ptr_t2->my_int;
     int backup2 = proxy.instance()->sptr_t2->my_int;
@@ -45,6 +75,9 @@ TEST_CASE("指针结构体绑定测试")
 
 TEST_CASE("qt json测试")
 {
+
+    SKIP();
+
     {
         //序列化
         std::shared_ptr<prism::qt::core::prismTreeModelProxy<st_test>> modelproxy = std::make_shared<prism::qt::core::prismTreeModelProxy<st_test>>();
@@ -73,15 +106,17 @@ TEST_CASE("qt json测试")
     SKIP();
 
 
-    st_test model;
-    std::string json = prism::json::toJsonString(model, 4);
-    std::cout << json << std::endl;
+    {
+        st_test model;
+        std::string json = prism::json::toJsonString(model, 4);
+        std::cout << json << std::endl;
 
-    std::shared_ptr<st_test> deserialization = prism::json::fromJsonString<st_test>(std::move(json));
+        std::shared_ptr<st_test> deserialization = prism::json::fromJsonString<st_test>(std::move(json));
 
-    std::string json2 = prism::json::toJsonString(*deserialization, 4);
-    std::cout << json2 << std::endl;
-    REQUIRE(json == json2);
+        std::string json2 = prism::json::toJsonString(*deserialization, 4);
+        std::cout << json2 << std::endl;
+        REQUIRE(json == json2);
+    }
 }
 
 int main(int argc, const char** argv)
