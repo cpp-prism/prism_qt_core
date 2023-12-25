@@ -78,7 +78,8 @@ public:
 
     std::shared_ptr<prismTreeNodeProxy<T>> child(int row)
     {
-        if(m_childItems.size() > row && row>=0 )
+        int size = static_cast<int>(m_childItems.size());
+        if(size > row && row>=0 )
             return m_childItems.at(row);
         else
             return nullptr;

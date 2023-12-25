@@ -26,7 +26,7 @@ public:
     Q_INVOKABLE virtual QModelIndex getIdexByData(QVariant) {return QModelIndex();}
     Q_INVOKABLE virtual bool removeNode(const QModelIndex& index) { Q_UNUSED(index) return false; }
     Q_INVOKABLE virtual bool removeNode(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
-    Q_INVOKABLE virtual bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row) return false;}
+    Q_INVOKABLE virtual bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row)  Q_UNUSED(vnode) return false;}
 
 //    // QAbstractItemModel interface
 //public:
@@ -246,7 +246,7 @@ public:
             return false;
         }
 
-        if(row > parentItem->m_childItems.size())
+        if(row > static_cast<int>(parentItem->m_childItems.size()))
         {
             row = static_cast<int>(parentItem->m_childItems.size());
             //qDebug()<< "insert index out of range :" <<row;

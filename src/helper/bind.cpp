@@ -1,5 +1,8 @@
 #include "bind.h"
+
+#ifdef _MSC_VER
 #pragma warning(disable: 4996)
+#endif
 
 namespace prism::qt::core{
 prismBind::prismBind(QObject *parent)

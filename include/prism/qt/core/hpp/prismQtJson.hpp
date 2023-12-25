@@ -275,7 +275,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
 {
     constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
     {
-        using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
+        //using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
         int count = 0;
         //if(!value.instance())
         //    value.m_instance = std::make_shared<valueType_t>();
