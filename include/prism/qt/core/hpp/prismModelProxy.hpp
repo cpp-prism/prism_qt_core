@@ -84,6 +84,10 @@ public:
     {
         return m_instance;
     }
+    void setInstance(std::shared_ptr<T> newInstance)
+    {
+        m_instance = newInstance;
+    }
     std::shared_ptr<T> m_instance = nullptr;
     virtual ~prismModelProxy<T>(){}
     prismModelProxy<T>(QObject* parent = nullptr,std::shared_ptr<T> instance=std::make_shared<T>())
