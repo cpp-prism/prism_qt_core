@@ -33,14 +33,14 @@ PRISMQT_TYPE(t1);
 TEST_CASE("动态库调用")
 {
 #ifdef _WIN32
-    void* lib =dynamic_lib_caller::loadLib(R"(D:\Users\user\Documents\source\repos\dv_app_solution\prism_all\build-prism_qt_core-Desktop_Qt_5_15_2_MSVC2019_64bit\Debug\pureCppLib.dll)");
+    void* lib =prism::qt::modular::dynamic_lib_caller::loadLib(R"(D:\Users\user\Documents\source\repos\dv_app_solution\prism_all\build-prism_qt_core-Desktop_Qt_5_15_2_MSVC2019_64bit\Debug\pureCppLib.dll)");
 #else
-    void* lib =dynamic_lib_caller::loadLib(R"(/home/deepvision/source/repos/build-pureCppLib-Desktop_Qt_5_15_2_GCC_64bit-Debug/libpureCppLib.so.1.0.0)");
+    void* lib =prism::qt::modular::dynamic_lib_caller::loadLib(R"(/home/deepvision/source/repos/build-pureCppLib-Desktop_Qt_5_15_2_GCC_64bit-Debug/libpureCppLib.so.1.0.0)");
 #endif
 
     if(lib)
     {
-        void* func = dynamic_lib_caller::getFunctionAddr(lib,"avg");
+        void* func = prism::qt::modular::dynamic_lib_caller::getFunctionAddr(lib,"avg");
         if(func)
         {
             double value = -1;
@@ -51,7 +51,7 @@ TEST_CASE("动态库调用")
             {
                 value = f(6,15);
 
-                dynamic_lib_caller::unloadLib(lib);
+                prism::qt::modular::dynamic_lib_caller::unloadLib(lib);
             }
 
             std::cout << value;
