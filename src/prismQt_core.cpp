@@ -1,5 +1,6 @@
 #include "include/prism/qt/core/helper/sortfilterproxymodel.h"
 #include "include/prism/qt/core/hpp/prismQt.hpp"
+#include "include/prism/qt/core/hpp/prismDataAccessLayer.hpp"
 #include "include/prism/qt/core/prismQt_events.h"
 #include "prismQt_core.h"
 #include "src/helper/bind.h"
@@ -30,7 +31,8 @@ bool prismQt_core::register_types()
     Container::get()->register_instance<prismQt_events>(std::make_shared<prismQt_events>());
 
     qRegisterMetaType<std::condition_variable*>("std::condition_variable*");
-
+    qRegisterMetaType<Sql_logic_base*>("Sql_logic_base*");
+    qRegisterMetaType<bool*>("bool*");
 
     //注册单例 到qml engine  qt 5.15的语法
     //qmlRegisterSingletonInstance<prismBind>("prismCpp", 1, 0, "Bind", new prismBind());

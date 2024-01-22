@@ -1,7 +1,40 @@
 #ifndef TEST_MODEL_H
 #define TEST_MODEL_H
 #include "include/prism/qt/core/hpp/prismQt.hpp"
+#include <prism/prismSql.hpp>
 #include <QDateTime>
+
+
+struct testTable{
+    testTable(){}
+    testTable(int id):my_int(id){}
+    bool my_bool = true;
+    int my_int = 132;
+    float my_float = 1.23f;
+    double my_double = 2.340;
+    std::string my_str = "this is a std string";
+};
+PRISM_FIELDS(testTable,my_bool,my_int,my_float,my_double,my_str);
+PRISM_FIELD_ATTRIBUTE(prism::sql::attributes::Attr_sql_field_isPrimaryKey,&testTable::my_int,true);
+
+
+
+struct t2 {
+    int my_int = 1;
+};
+PRISM_FIELDS(t2,my_int);
+PRISMQT_TYPE(t2);
+
+struct t1{
+    ~t1()
+    {
+        delete ptr_t2;
+    }
+    std::shared_ptr<t2> sptr_t2 = std::make_shared<t2>();
+    t2* ptr_t2 = new t2{};
+};
+PRISM_FIELDS(t1,sptr_t2,ptr_t2);
+PRISMQT_TYPE(t1);
 
 std::time_t initTimestamp(int year, int month, int day, int hour = 0, int min = 0, int second = 0)
 {

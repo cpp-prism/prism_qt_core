@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Widgets Quick Qml QuickControls2 REQUIRED Sql)
 find_package(prism COMPONENTS qt::modular container)
 
 
@@ -30,12 +30,15 @@ add_library(${PROJECT_NAME} SHARED
     include/prism/qt/core/hpp/prismModelProxy.hpp
     include/prism/qt/core/hpp/prismTreeModelProxy.hpp
     include/prism/qt/core/hpp/prismTreeNodeProxy.hpp
+    include/prism/qt/core/hpp/prismDataAccessLayer.hpp
+    include/prism/qt/core/hpp/prismQtTask.hpp
 
     include/prism/qt/core/helper/imagePaintedItem.h
     include/prism/qt/core/helper/imagepainteditemqsg.h
     include/prism/qt/core/helper/sortfilterproxymodel.h
     include/prism/qt/core/helper/qeventloopguard.h
     include/prism/qt/core/helper/condition_varaiable_guard.h
+    include/prism/qt/core/helper/prismdataaccesslayerbase.h
 
     include/prism/qt/core/prismQt_core_global.h
     include/prism/qt/core/prismQt_events.h
@@ -47,6 +50,7 @@ add_library(${PROJECT_NAME} SHARED
     src/helper/imagePaintedItem.cpp
     src/helper/imagepainteditemqsg.cpp
     src/helper/sortfilterproxymodel.cpp
+    src/helper/prismdataaccesslayerbase.cpp
 
     src/prismQt_core.h
     src/prismQt_core.cpp
@@ -69,6 +73,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     prism::qt::modular
     prism::container
     Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Sql
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Quick
@@ -117,6 +122,7 @@ endif()
 
 #
 
+#if( NOT VCPKG_DISABLE_TEST)
 if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
     find_package(Catch2 REQUIRED)
     include(CTest)
@@ -136,6 +142,7 @@ if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
         prism::prism
         prism::qt::modular
         Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Sql
         Qt${QT_VERSION_MAJOR}::Gui
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::Quick
