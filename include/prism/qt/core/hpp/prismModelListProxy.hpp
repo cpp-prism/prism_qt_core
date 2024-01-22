@@ -7,6 +7,7 @@
 #include <memory>
 #include <prism/prism.hpp>
 #include <type_traits>
+#include <QCoreApplication>
 
 namespace prism::qt::core
 {
@@ -204,6 +205,7 @@ class prismModelListProxy : public prismModelListProxyBase
         int total = m_list->size();
         for (int i = 0; i < total; i++)
         {
+            QCoreApplication::processEvents();
             m_list->removeAt(0);
         }
     }
@@ -212,6 +214,7 @@ class prismModelListProxy : public prismModelListProxyBase
         int total = m_list->size();
         for (int i = 0; i < total; i++)
         {
+            QCoreApplication::processEvents();
             beginRemoveRows(QModelIndex(), 0, 0);
             m_list->removeAt(0);
             endRemoveRows();
