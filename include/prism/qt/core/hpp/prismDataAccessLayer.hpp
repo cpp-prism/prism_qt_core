@@ -20,11 +20,11 @@ struct Sql_logic:public Sql_logic_base
 
 
 
-template<class T>
+template<class SQLT>
 class prismDataAccessLayer :public prismDataAccessLayerBase
 {
-    using db_type_t = T;
-    using sql_type_t = ::prism::sql::Sql<T> ;
+    using db_type_t = SQLT;
+    using sql_type_t = ::prism::sql::Sql<SQLT> ;
 private:
     constexpr const char* getQtDatabaseType()
     {
@@ -46,7 +46,7 @@ public:
     {
         bool result = this->run(Sql_logic([](std::shared_ptr<QSqlDatabase> db)
                                 {
-                                    std::string sql_create_table = sql_type_t::deleteTable<T>();
+                                    std::string sql_create_table =  sql_type_t::template deleteTable<T>();
                                     QSqlQuery query(*db);
                                     QString sql = QString::fromStdString(sql_create_table);
                                     qDebug() << "================================================================ ";
@@ -69,7 +69,7 @@ public:
     {
         bool result = this->run(Sql_logic([](std::shared_ptr<QSqlDatabase> db)
                                 {
-                                    std::string sql_create_table = sql_type_t::createTable<T>();
+                                    std::string sql_create_table = sql_type_t::template createTable<T>();
                                     QSqlQuery query(*db);
                                     QString sql = QString::fromStdString(sql_create_table);
                                     qDebug() << "================================================================ ";
@@ -93,7 +93,7 @@ public:
     {
         bool result = this->run(Sql_logic([&](std::shared_ptr<QSqlDatabase> db)
                                 {
-                                    std::string sql_create_table = sql_type_t::insert<T>(models);
+                                    std::string sql_create_table = sql_type_t::template insert<T>(models);
                                     QSqlQuery query(*db);
                                     QString sql = QString::fromStdString(sql_create_table);
                                     qDebug() << "================================================================ ";
@@ -118,7 +118,7 @@ public:
         this->run(Sql_logic([&](std::shared_ptr<QSqlDatabase> db)
                   {
 
-                      std::string sql_create_table = sql_type_t::queryTable<T>(where);
+                      std::string sql_create_table = sql_type_t::template queryTable<T>(where);
                       QSqlQuery query(*db);
                       QString sql = QString::fromStdString(sql_create_table);
                       qDebug() << "================================================================ ";
@@ -153,6 +153,9 @@ public:
 
                                       if(ignore.has_value() && ignore)
                                       return;
+
+                                      if(!datatype.has_value())
+                                          qDebug()<< QString("filed: %1 hadn't config sql datatype").arg(fname);
 
                                       if(!std::strcmp(datatype.value() , "TEXT"))
                                       {

@@ -9,7 +9,7 @@
 
 namespace prism::qt::core {
 
-void prism::qt::core::Sql_logic_base::run(std::shared_ptr<QSqlDatabase> db) { }
+void prism::qt::core::Sql_logic_base::run([[maybe_unused]]std::shared_ptr<QSqlDatabase> db) { }
 
 void prism::qt::core::prismDataAccessLayerBase::init() {
     thread_.reset(new QThread());
