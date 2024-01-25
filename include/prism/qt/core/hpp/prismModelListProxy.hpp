@@ -55,12 +55,12 @@ template <typename T>
 class prismModelListProxy : public prismModelListProxyBase
 {
 
-    QVector<prismModelProxy<T>*>* m_list = nullptr;
+    QVector<std::shared_ptr<prismModelProxy<T>>>* m_list = nullptr;
 
   public:
     using value_type = T;
     explicit prismModelListProxy(QObject* parent = nullptr)
-        : prismModelListProxyBase(parent), m_list(new QVector<prismModelProxy<T>*>())
+        : prismModelListProxyBase(parent), m_list(new QVector<std::shared_ptr<prismModelProxy<T>>>())
     {
         Q_UNUSED(parent)
         QQmlEngine::setObjectOwnership(this, QQmlEngine::ObjectOwnership::CppOwnership);
@@ -85,7 +85,10 @@ class prismModelListProxy : public prismModelListProxyBase
         if (idx >= m_list->size())
             return QVariant();
         if (m_list)
-            return QVariant::fromValue(m_list->at(idx));
+        {
+            std::shared_ptr<prismModelProxy<T>> tm = m_list->at(idx);
+            return QVariant::fromValue(tm.get());
+        }
 
         return QVariant();
     }
@@ -96,12 +99,15 @@ class prismModelListProxy : public prismModelListProxyBase
         if (index >= m_list->size())
             return QVariant();
         if (m_list)
-            return QVariant::fromValue(m_list->at(index));
+        {
+            std::shared_ptr<prismModelProxy<T>> tm = m_list->at(index);
+            return QVariant::fromValue(tm.get());
+        }
 
         return QVariant();
     }
 
-    QVector<prismModelProxy<T>*>* list() const
+    QVector<std::shared_ptr<prismModelProxy<T>>>* list() const
     {
         return m_list;
     }
@@ -120,7 +126,7 @@ class prismModelListProxy : public prismModelListProxyBase
         Q_UNUSED(role)
         if (!index.isValid() || !list())
             return QVariant();
-        prismModelProxy<T>* tm = m_list->at(index.row());
+        std::shared_ptr<prismModelProxy<T>> tm = m_list->at(index.row());
 
         // todo
         return tm->get(roleNames()[role].data());
@@ -131,7 +137,7 @@ class prismModelListProxy : public prismModelListProxyBase
     {
         if (!m_list || index.row() < 0 || index.row() + 1 > m_list->count())
             return false;
-        prismModelProxy<T>* tm = m_list->at(index.row());
+        std::shared_ptr<prismModelProxy<T>> tm = m_list->at(index.row());
 
         tm->set(roleNames()[role].data(), value.value<T>());
         emit dataChanged(index, index, {role});
@@ -145,7 +151,7 @@ class prismModelListProxy : public prismModelListProxyBase
         if (index < 0 || index + 1 > m_list->count())
             return false;
 
-        prismModelProxy<T>* tm = m_list->at(index);
+        prismModelProxy<T>* tm = m_list->at(index)->get();
 
         int role = nameRoles()[roleName];
         tm->set(roleName.data(), value);
@@ -193,12 +199,12 @@ class prismModelListProxy : public prismModelListProxyBase
     virtual void appendItem(std::shared_ptr<T> tm)
     {
         beginInsertRows(QModelIndex(), m_list->size(), m_list->size());
-        m_list->append(new prismModelProxy<T>(this, tm));
+        m_list->append(std::make_shared<prismModelProxy<T>>(this, tm));
         endInsertRows();
     }
     virtual void appendItemNotNotify(std::shared_ptr<T> tm)
     {
-        m_list->append(new prismModelProxy<T>(this, tm));
+        m_list->append(std::make_shared<prismModelProxy<T>>(this, tm));
     }
     virtual void removeAllItemsNotNotify()
     {
@@ -237,7 +243,7 @@ class prismModelListProxy : public prismModelListProxyBase
             return -1;
         for (int i = 0; i < list()->size(); ++i)
         {
-            prismModelProxy<T>* item = list()->at(i);
+            prismModelProxy<T>* item = list()->at(i).get();
             if (value == item->get(fname.toStdString().data()))
             {
                 return i;
