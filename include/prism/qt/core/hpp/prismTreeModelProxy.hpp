@@ -28,14 +28,6 @@ public:
     Q_INVOKABLE virtual bool removeNode(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
     Q_INVOKABLE virtual bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row)  Q_UNUSED(vnode) return false;}
 
-//    // QAbstractItemModel interface
-//public:
-//    QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-//    QModelIndex parent(const QModelIndex &child) const override;
-//    int rowCount(const QModelIndex &parent) const override;
-//    int columnCount(const QModelIndex &parent) const override;
-//    bool hasChildren(const QModelIndex &parent) const override;
-//    QVariant data(const QModelIndex &index, int role) const override;
 };
 
 template<class T>
