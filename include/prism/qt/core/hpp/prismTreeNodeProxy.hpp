@@ -21,6 +21,14 @@ class prismTreeNodeProxy :public prismModelProxy<T>,public std::enable_shared_fr
 public:
     using value_type = T;
 
+    static void recurseNodeDo(prismTreeNodeProxy<T>* node ,std::function<void(prismTreeNodeProxy<T>*)> lambda)
+    {
+        for(std::shared_ptr<prismTreeNodeProxy<T>> item : node->childItems())
+        {
+            recurseNodeDo(item.get(),lambda);
+        }
+        lambda(node);
+    }
     static bool recurseNodePredict(prismTreeNodeProxy<T>* node ,std::function<bool(prismTreeNodeProxy<T>*)> lambda)
     {
         bool result = false;
