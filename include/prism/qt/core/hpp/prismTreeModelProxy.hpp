@@ -21,6 +21,7 @@ public:
         Q_UNUSED(parent)
     }
     virtual ~prismTreeModelProxyBase() {}
+    Q_INVOKABLE virtual QVariant getRootNode() { return QVariant();}
     Q_INVOKABLE virtual QVariant getRowData(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
     Q_INVOKABLE virtual QVariant getRowDataSptr(const QModelIndex& index) { Q_UNUSED(index) return QVariant(); }
     Q_INVOKABLE virtual QModelIndex getIdexByData(QVariant) {return QModelIndex();}
@@ -48,6 +49,13 @@ private:
         }
         func(node);
 
+    }
+
+    QVariant getRootNode() {
+        if(rootNode())
+            return QVariant::fromValue(rootNode().get());
+        else
+            return QVariant();
     }
 
     QModelIndex recurseGetIndex(void* data = nullptr,  QModelIndex parent = QModelIndex())
