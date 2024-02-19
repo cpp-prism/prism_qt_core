@@ -237,9 +237,17 @@ public:
         std::shared_ptr<prismTreeNodeProxy<T>> node = vnode.value<std::shared_ptr<prismTreeNodeProxy<T>>>() ;
         prismTreeNodeProxy<T>* parentItem;
         if(parent.isValid())
+        {
             parentItem = static_cast<prismTreeNodeProxy<T>*>(parent.internalPointer());
+            QVariant tmp =  getRowDataSptr(parent);
+            std::shared_ptr<prismTreeNodeProxy<T>> parentitem =tmp.value<std::shared_ptr<prismTreeNodeProxy<T>>>();
+            node->setParentItem(parentitem);
+        }
         else
+        {
             parentItem  = rootNode().get();
+            node->setParentItem(rootNode());
+        }
 
         if(row <0)
         {
@@ -247,11 +255,11 @@ public:
             return false;
         }
 
-        if(row > static_cast<int>(parentItem->m_childItems.size()))
+        if(row> static_cast<int>(parentItem->m_childItems.size()))
         {
-            row = static_cast<int>(parentItem->m_childItems.size());
-            //qDebug()<< "insert index out of range :" <<row;
-            //return false;
+            //row = static_cast<int>(parentItem->m_childItems.size()-1);
+            qDebug()<< "insert index out of range :" <<row;
+            return false;
         }
 
         beginInsertRows(parent, row, row);
