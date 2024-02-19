@@ -77,6 +77,7 @@ class PRISMQT_CORE_EXPORT prismModelProxyBase : public QObject
         setNotifyFlag(!notifyFlag());
     }
 
+    Q_INVOKABLE virtual void* getData(){ return nullptr;}
     void setNotifyFlag(bool notifyFlag)
     {
         if (m_notifyFlag == notifyFlag)
@@ -162,6 +163,11 @@ class prismModelProxy : public prismModelProxyBase
         //     }
         //     v =  value.value<std::remove_reference_t<decltype(v)>>();
         // });
+    }
+    void* getData(){
+        if(!instance())
+            return nullptr;
+        return instance().get();
     }
 };
 
