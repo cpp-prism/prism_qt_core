@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE virtual QModelIndex getIdexByData(QVariant) {return QModelIndex();}
     Q_INVOKABLE virtual bool removeNode(const QModelIndex& index) { Q_UNUSED(index) return false; }
     Q_INVOKABLE virtual bool removeNode(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
+    Q_INVOKABLE virtual bool removeNodeAllchildren(QVariant to_del_node) { Q_UNUSED(to_del_node) return false; }
     Q_INVOKABLE virtual bool insertNode(const QModelIndex& parent,int row,QVariant vnode){Q_UNUSED(parent) Q_UNUSED(row)  Q_UNUSED(vnode) return false;}
 
 };
@@ -296,6 +297,20 @@ public:
         //std::shared_ptr<prismTreeNodeProxy<T>> to_del_node = parentItem->child(index.row());
         //to_del_node.reset();
         parentItem->m_childItems.erase(parentItem->m_childItems.begin()+index.row());
+        endRemoveRows();
+        return true;
+    }
+
+    bool removeNodeAllchildren(QVariant to_del_node) override
+    {
+        QModelIndex index =  getIdexByData(to_del_node);
+        prismTreeNodeProxy<T>* parentItem;
+        if(index.isValid())
+            parentItem = static_cast<prismTreeNodeProxy<T>*>(index.internalPointer());
+        else
+            parentItem  = rootNode().get();
+        beginRemoveRows(index,0, rowCount(index)-1);
+        parentItem->m_childItems.clear();
         endRemoveRows();
         return true;
     }
