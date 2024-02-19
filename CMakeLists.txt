@@ -32,6 +32,7 @@ add_library(${PROJECT_NAME} SHARED
     include/prism/qt/core/hpp/prismTreeNodeProxy.hpp
     include/prism/qt/core/hpp/prismDataAccessLayer.hpp
     include/prism/qt/core/hpp/prismQtTask.hpp
+    include/prism/qt/core/hpp/prismEnumProxy.hpp
 
     include/prism/qt/core/helper/imagePaintedItem.h
     include/prism/qt/core/helper/imagepainteditemqsg.h
