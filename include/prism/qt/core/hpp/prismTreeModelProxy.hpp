@@ -317,6 +317,8 @@ public:
             parentItem = static_cast<prismTreeNodeProxy<T>*>(index.internalPointer());
         else
             parentItem  = rootNode().get();
+        if(rowCount(index)<=0)
+            return true;
         beginRemoveRows(index,0, rowCount(index)-1);
         parentItem->m_childItems.clear();
         endRemoveRows();

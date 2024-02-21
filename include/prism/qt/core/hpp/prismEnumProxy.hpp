@@ -78,7 +78,7 @@ private:
 
 
 template<class T>
-class PRISMQT_CORE_EXPORT prismEnumProxy : public prismEnumProxyBase
+class prismEnumProxy : public prismEnumProxyBase
 {
 public:
     T getEnumValue()
@@ -87,26 +87,35 @@ public:
     }
     virtual int qstr2int(QString svalue)
     {
-        return static_cast<int>(prism::enums::enum_info<T>::fromstring(svalue.toStdString().c_str()));
+        if constexpr (prism::utilities::has_def<prism::enums::enum_info<T>>::value)
+                return static_cast<int>(prism::enums::enum_info<T>::fromstring(svalue.toStdString().c_str()));
+        else
+            return -1;
     }
     virtual QString int2qstr(int ivalue)
     {
-        return QString::fromStdString(std::string(prism::enums::enum_info<T>::tostring(static_cast<T>(ivalue))));
+        if constexpr (prism::utilities::has_def<prism::enums::enum_info<T>>::value)
+                return QString::fromStdString(std::string(prism::enums::enum_info<T>::tostring(static_cast<T>(ivalue))));
+        else
+            return QString();
     }
     prismEnumProxy(QObject* parent = nullptr):prismEnumProxyBase(parent)
     {
         QQmlEngine::setObjectOwnership(this, QQmlEngine::ObjectOwnership::CppOwnership);
-        static QStringList qops ;
-        if(!qops.size())
+        if constexpr (prism::utilities::has_def<prism::enums::enum_info<T>>::value)
         {
-            std::vector<std::string>& ops = prism::enums::enum_info<T>::getStrVector();
-            for(const std::string& item : ops)
+            static QStringList qops ;
+            if(!qops.size())
             {
-                qops.append(QString::fromStdString(item));
+                std::vector<std::string>& ops = prism::enums::enum_info<T>::getStrVector();
+                for(const std::string& item : ops)
+                {
+                    qops.append(QString::fromStdString(item));
+                }
             }
+            setOptions(qops);
+            setValueStr(qops.at(m_value));
         }
-        setOptions(qops);
-        setValueStr(qops.at(m_value));
     }
     void setValue(int newValue) override
     {
