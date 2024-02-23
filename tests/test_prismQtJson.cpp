@@ -24,7 +24,7 @@ QApplication a(argc,(char**)nullptr);
 
 TEST_CASE("tst qt core")
 {
-    qRegisterMetaType<Sql_logic_base*>("Sql_logic_base*");
+    qRegisterMetaType<prism::qt::core::Sql_logic_base*>("Sql_logic_base*");
     qRegisterMetaType<std::condition_variable*>("std::condition_variable*");
     qRegisterMetaType<bool*>("bool*");
 
@@ -32,8 +32,8 @@ TEST_CASE("tst qt core")
     SECTION("tst database access")
     {
         //读线分离
-        prismDataAccessLayer<prism::sql::sqlite3::Sqlite3> dal_write ("tst_sqlite_write_cached_name","test_sqlite3.db");
-        prismDataAccessLayer<prism::sql::sqlite3::Sqlite3> dal_read ("tst_sqlite_read_cached_name","test_sqlite3.db");
+        prism::qt::core::prismDataAccessLayer<prism::sql::sqlite3::Sqlite3> dal_write ("tst_sqlite_write_cached_name","test_sqlite3.db");
+        prism::qt::core::prismDataAccessLayer<prism::sql::sqlite3::Sqlite3> dal_read ("tst_sqlite_read_cached_name","test_sqlite3.db");
 
         //删除表
         dal_write.deleteTable<testTable>();
