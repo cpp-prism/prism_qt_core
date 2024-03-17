@@ -217,13 +217,18 @@ constexpr inline bool set_field_do(QList<const char*>& fns, TV& p_v, QVariant& v
             return false;
         }
         auto v = value.value<model_t>();
-        if (v != p_v)
-        {
-            p_v = v;
+        if constexpr (std::is_class_v<model_t>)
             return true;
-        }
         else
-            return false;
+        {
+            if ( v != p_v)
+            {
+                p_v = v;
+                return true;
+            }
+            else
+                return false;
+        }
     }
     else
     {
