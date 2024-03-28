@@ -216,11 +216,11 @@ constexpr inline bool set_field_do(QList<const char*>& fns, TV& p_v, QVariant& v
             qDebug() << "设置值失败,类型错误,不能把" << value << QString("设置给[%1]类型的变量").arg(QString::fromStdString(std::string(utilities::typeName<decltype(p_v)>::name())));
             return false;
         }
-        auto v = value.value<model_t>();
         if constexpr (std::is_class_v<model_t>)
             return true;
         else
         {
+            auto v = value.value<model_t>();
             if ( v != p_v)
             {
                 p_v = v;
