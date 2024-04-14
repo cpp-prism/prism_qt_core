@@ -265,7 +265,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
             jsonType<prism::qt::core::prismTreeNodeProxy<valueType_t>>::type::from_jsonStr( std::move(*rootNode),std::move(str),vstart, vend);
             model.setRootNode(rootNode);
         }
-    }
+    };
 };
 
 // prismModelProxy
@@ -273,39 +273,21 @@ template <class T>
 struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,prism::qt::core::prismModelProxy>::value,
         void>> : public jsonObjectBase<jsonObject<T>>
 {
+
+    using jsonObjectBase<jsonObject<T>>::alias_map_;
     constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
     {
-        //using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
-        int count = 0;
-        //if(!value.instance())
-        //    value.m_instance = std::make_shared<valueType_t>();
-        prism::reflection::for_each_fields<prism::utilities::const_hash("json")>(*value.instance(), [&](const char* ffname, auto&& value_) {
-            if (count)
-            {
-                stream << ',';
-            }
-            if (identation)
-            {
-                if (count)
-                    stream << std::endl;
-                for (int i = 0; i < identation * (level); ++i)
-                    stream << " ";
-            }
-            using v_t = std::remove_reference_t<std::remove_reference_t<decltype(value_)>>;
-            jsonType<v_t>::type::append_key_value(stream, ffname, std::move(value_), identation, std::move(level));
-
-            ++count;
-        });
+        using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
+        jsonObject<valueType_t>::append_sub_kvs(stream, fname, std::move(*value.instance()), identation, std::move(level));
 
     }
 
     static void read_sub_kv([[maybe_unused]] T&& model, [[maybe_unused]] std::string_view&& str, [[maybe_unused]] int kstart, [[maybe_unused]] int kend, [[maybe_unused]] int vstart, [[maybe_unused]] int vend)
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*model.instance())>>;
-        auto s = std::string(str.substr(kstart, kend - kstart));
-        //if(!model.instance())
-        //    model.m_instance = std::make_shared<valueType_t>();
-        jsonType<std::vector<std::shared_ptr<prism::qt::core::prismModelProxy<valueType_t>>>>::type::from_jsonStr(std::move(model.m_childItems), std::move(str), vstart, vend);
+        if(!model.instance())
+            model.setInstance(std::make_shared<valueType_t>());
+        jsonObject<valueType_t>::read_sub_kv(std::move(*model.instance()),  std::move(str),  kstart,  kend,  vstart,  vend);
     }
 };
 
