@@ -55,7 +55,9 @@ Q_DECLARE_METATYPE(std::stdoptional<uint16_t>)
 Q_DECLARE_METATYPE(prism::qt::core::prismEnumProxyBase*)
 Q_DECLARE_METATYPE(std::shared_ptr<prism::qt::core::prismEnumProxyBase>)
 
-#define PRISMQT_TYPE(Class)                     \
+
+
+#define PRISMQT_ENUM(Class)                     \
 Q_DECLARE_METATYPE(Class)                   \
 Q_DECLARE_METATYPE(Class*)                  \
 Q_DECLARE_METATYPE(std::stdoptional<Class>) \
@@ -65,7 +67,18 @@ Q_DECLARE_METATYPE(QList<Class>)            \
 Q_DECLARE_METATYPE(std::vector<Class>)      \
 Q_DECLARE_METATYPE(QVector<Class>)\
 Q_DECLARE_METATYPE(prism::qt::core::prismEnumProxy<Class>*)                 \
-Q_DECLARE_METATYPE(std::shared_ptr<prism::qt::core::prismEnumProxy<Class>>)                 \
+Q_DECLARE_METATYPE(std::shared_ptr<prism::qt::core::prismEnumProxy<Class>>)
+
+
+#define PRISMQT_CLASS(Class)                     \
+Q_DECLARE_METATYPE(Class)                   \
+Q_DECLARE_METATYPE(Class*)                  \
+Q_DECLARE_METATYPE(std::stdoptional<Class>) \
+Q_DECLARE_METATYPE(std::shared_ptr<Class>)  \
+Q_DECLARE_METATYPE(std::list<Class>)        \
+Q_DECLARE_METATYPE(QList<Class>)            \
+Q_DECLARE_METATYPE(std::vector<Class>)      \
+Q_DECLARE_METATYPE(QVector<Class>)\
 Q_DECLARE_METATYPE(prism::qt::core::prismModelProxy<Class>*)                 \
 Q_DECLARE_METATYPE(std::shared_ptr<prism::qt::core::prismModelProxy<Class>>) \
 Q_DECLARE_METATYPE(prism::qt::core::prismModelListProxy<Class>*)             \
@@ -75,6 +88,11 @@ Q_DECLARE_METATYPE(std::shared_ptr<prism::qt::core::prismTreeNodeProxy<Class>>)\
 Q_DECLARE_METATYPE(prism::qt::core::prismTreeModelProxy<Class>*)                 \
 Q_DECLARE_METATYPE(std::shared_ptr<prism::qt::core::prismTreeModelProxy<Class>>)
 
+
+#define PRISMQT_MODEL(Class)                \
+Q_DECLARE_METATYPE(Class)                   \
+Q_DECLARE_METATYPE(std::shared_ptr<Class>)  \
+Q_DECLARE_METATYPE(Class*)                  \
 
 
 #endif // PRISM_QT_CORE_HPP_PRISMQT_HPP
