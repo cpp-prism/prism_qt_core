@@ -133,13 +133,14 @@ class prismModelListProxy : public prismModelListProxyBase
     }
 
     // Editable:
-    bool setData(const QModelIndex& index, QVariant& value, int role = Qt::EditRole)
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override
     {
         if (!m_list || index.row() < 0 || index.row() + 1 > m_list->count())
             return false;
         std::shared_ptr<prismModelProxy<T>> tm = m_list->at(index.row());
 
-        tm->set(roleNames()[role].data(), value.value<T>());
+        QVariant* constp = const_cast<QVariant*>(reinterpret_cast<const QVariant*>(&value));
+        tm->set(roleNames()[role].data(), *constp);
         emit dataChanged(index, index, {role});
         return true;
     }

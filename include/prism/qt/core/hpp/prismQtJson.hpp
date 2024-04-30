@@ -57,7 +57,6 @@ struct jsonArray<T, std::enable_if_t<std::is_same_v<QStringList,T>,
     constexpr static void read_sub_value(T&& model, std::string_view&& str, int start, int end)
     {
         using ft_ = typename T::value_type;
-        QStringList aa;
         model.push_back({});
         jsonType<ft_>::type::from_jsonStr(std::move(model.last()), std::move(str), start, end);
     }

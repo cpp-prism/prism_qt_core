@@ -52,7 +52,8 @@ private:
 
     }
 
-    QVariant getRootNode() {
+    QVariant getRootNode() override
+    {
         if(rootNode())
             return QVariant::fromValue(rootNode().get());
         else

@@ -57,7 +57,7 @@ public:
         emit valueChanged();
     }
 
-    virtual int qstr2int(QString svalue){Q_UNUSED(svalue) return 0;}
+    virtual int qstr2int(QString svalue) {Q_UNUSED(svalue) return 0;}
     virtual QString int2qstr(int ivalue){ Q_UNUSED(ivalue) return QString();}
 
 
@@ -85,14 +85,14 @@ public:
     {
         return static_cast<T>(value());
     }
-    virtual int qstr2int(QString svalue)
+    virtual int qstr2int(QString svalue) override
     {
         if constexpr (prism::utilities::has_def<prism::enums::enum_info<T>>::value)
                 return static_cast<int>(prism::enums::enum_info<T>::fromstring(svalue.toStdString().c_str()));
         else
             return -1;
     }
-    virtual QString int2qstr(int ivalue)
+    virtual QString int2qstr(int ivalue) override
     {
         if constexpr (prism::utilities::has_def<prism::enums::enum_info<T>>::value)
                 return QString::fromStdString(std::string(prism::enums::enum_info<T>::tostring(static_cast<T>(ivalue))));

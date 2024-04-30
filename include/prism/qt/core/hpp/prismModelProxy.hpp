@@ -164,7 +164,8 @@ class prismModelProxy : public prismModelProxyBase
         //     v =  value.value<std::remove_reference_t<decltype(v)>>();
         // });
     }
-    void* getData(){
+    void* getData() override
+    {
         if(!instance())
             return nullptr;
         return instance().get();
