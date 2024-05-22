@@ -23,7 +23,7 @@ struct t2 {
     int my_int = 1;
 };
 PRISM_FIELDS(t2,my_int);
-PRISMQT_TYPE(t2);
+PRISMQT_CLASS(t2);
 
 struct t1{
     ~t1()
@@ -34,7 +34,7 @@ struct t1{
     t2* ptr_t2 = new t2{};
 };
 PRISM_FIELDS(t1,sptr_t2,ptr_t2);
-PRISMQT_TYPE(t1);
+PRISMQT_CLASS(t1);
 
 std::time_t initTimestamp(int year, int month, int day, int hour = 0, int min = 0, int second = 0)
 {
@@ -73,8 +73,8 @@ struct st_test
     QStringList qslist = {"qstr1","qstr2"};
 };
 
-PRISMQT_TYPE(std::chrono::system_clock::time_point)
-PRISMQT_TYPE(st_test)
+PRISMQT_CLASS(std::chrono::system_clock::time_point)
+PRISMQT_CLASS(st_test)
 PRISM_FIELDS(st_test, my_bool, my_int, my_qlonglong, my_qstring_nll, my_qstring, my_qlist, my_qdatetime, my_time_point, my_qmap_k_string, my_qhash_qstring, stdVecQString,qslist)
 
 #endif // TEST_MODEL_H
