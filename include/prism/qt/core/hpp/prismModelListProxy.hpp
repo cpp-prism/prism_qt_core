@@ -3,11 +3,11 @@
 #include "../prismQt_core_global.h"
 #include "prismModelProxy.hpp"
 #include <QAbstractListModel>
+#include <QCoreApplication>
 #include <QObject>
 #include <memory>
 #include <prism/prism.hpp>
 #include <type_traits>
-#include <QCoreApplication>
 
 namespace prism::qt::core
 {
@@ -32,6 +32,10 @@ class PRISMQT_CORE_EXPORT prismModelListProxyBase : public QAbstractListModel
     {
         Q_UNUSED(index)
         return QVariant();
+    }
+    int size()
+    {
+        return this->length();
     }
     Q_INVOKABLE virtual int length()
     {

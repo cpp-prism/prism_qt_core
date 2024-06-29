@@ -1,10 +1,10 @@
 #ifndef PRISM_QT_CORE_HPP_PRISMQT_JSON_HPP
 #define PRISM_QT_CORE_HPP_PRISMQT_JSON_HPP
 #include "prismQt.hpp"
+#include "prismTreeModelProxy.hpp"
 #include <QDateTime>
 #include <QString>
 #include <prism/prismJson.hpp>
-#include "prismTreeModelProxy.hpp"
 #include <type_traits>
 namespace prism::json::privates
 {
@@ -28,7 +28,7 @@ struct jsonValue<T, std::enable_if_t<std::is_same_v<QString, T>,
 
 // extend QStringList
 template <class T>
-struct jsonArray<T, std::enable_if_t<std::is_same_v<QStringList,T>,
+struct jsonArray<T, std::enable_if_t<std::is_same_v<QStringList, T>,
                                      void>> : public jsonArrayBase<jsonArray<T>>
 {
     constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int&& level)
@@ -179,8 +179,8 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, QMa
 
 // prismTreeNodeProxy
 template <class T>
-struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,prism::qt::core::prismTreeNodeProxy>::value,
-        void>> : public jsonObjectBase<jsonObject<T>>
+struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, prism::qt::core::prismTreeNodeProxy>::value,
+                                      void>> : public jsonObjectBase<jsonObject<T>>
 {
     constexpr static inline const char* childitems_name = "childItems";
 
@@ -188,8 +188,8 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
         int count = 0;
-        //if(!value.instance())
-        //    value.m_instance = std::make_shared<valueType_t>();
+        // if(!value.instance())
+        //     value.m_instance = std::make_shared<valueType_t>();
         prism::reflection::for_each_fields<prism::utilities::const_hash("json")>(*value.instance(), [&](const char* ffname, auto&& value_) {
             if (count)
             {
@@ -220,9 +220,9 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*model.instance())>>;
         auto s = std::string(str.substr(kstart, kend - kstart));
-        //if(!model.instance())
-        //    model.m_instance = std::make_shared<valueType_t>();
-        if(s != std::string(childitems_name))
+        // if(!model.instance())
+        //     model.m_instance = std::make_shared<valueType_t>();
+        if (s != std::string(childitems_name))
         {
             prism::reflection::field_do<prism::utilities::const_hash("json")>(*model.instance(), s.c_str(), [&](auto&& value) {
                 using ft_ = std::remove_reference_t<std::remove_reference_t<decltype(value)>>;
@@ -237,10 +237,10 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
 };
 // prismTreeModelProxy
 template <class T>
-struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,prism::qt::core::prismTreeModelProxy>::value,
-        void>> : public jsonObjectBase<jsonObject<T>>
+struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, prism::qt::core::prismTreeModelProxy>::value,
+                                      void>> : public jsonObjectBase<jsonObject<T>>
 {
-    static inline const char*  rootNodeName = "rootNode";
+    static inline const char* rootNodeName = "rootNode";
 
     constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
     {
@@ -250,18 +250,18 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
         stream << " \"";
         stream << rootNodeName;
         stream << "\":";
-        jsonType<prism::qt::core::prismTreeNodeProxy<valueType_t>>::type::append_key_value(stream, fname,  std::move(*value.rootNode()), identation, std::move(level));
+        jsonType<prism::qt::core::prismTreeNodeProxy<valueType_t>>::type::append_key_value(stream, fname, std::move(*value.rootNode()), identation, std::move(level));
     }
 
     static void read_sub_kv([[maybe_unused]] T&& model, [[maybe_unused]] std::string_view&& str, [[maybe_unused]] int kstart, [[maybe_unused]] int kend, [[maybe_unused]] int vstart, [[maybe_unused]] int vend)
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*model.rootNode()->instance())>>;
         auto s = std::string(str.substr(kstart, kend - kstart));
-        if(s == std::string(rootNodeName))
+        if (s == std::string(rootNodeName))
         {
             std::shared_ptr<prism::qt::core::prismTreeNodeProxy<valueType_t>> rootNode = std::make_shared<prism::qt::core::prismTreeNodeProxy<valueType_t>>();
             rootNode->setInstance(std::make_shared<valueType_t>());
-            jsonType<prism::qt::core::prismTreeNodeProxy<valueType_t>>::type::from_jsonStr( std::move(*rootNode),std::move(str),vstart, vend);
+            jsonType<prism::qt::core::prismTreeNodeProxy<valueType_t>>::type::from_jsonStr(std::move(*rootNode), std::move(str), vstart, vend);
             model.setRootNode(rootNode);
         }
     };
@@ -269,8 +269,8 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
 
 // prismModelProxy
 template <class T>
-struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,prism::qt::core::prismModelProxy>::value,
-        void>> : public jsonObjectBase<jsonObject<T>>
+struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, prism::qt::core::prismModelProxy>::value,
+                                      void>> : public jsonObjectBase<jsonObject<T>>
 {
 
     using jsonObjectBase<jsonObject<T>>::alias_map_;
@@ -278,18 +278,55 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T,pris
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
         jsonObject<valueType_t>::append_sub_kvs(stream, fname, std::move(*value.instance()), identation, std::move(level));
-
     }
 
     static void read_sub_kv([[maybe_unused]] T&& model, [[maybe_unused]] std::string_view&& str, [[maybe_unused]] int kstart, [[maybe_unused]] int kend, [[maybe_unused]] int vstart, [[maybe_unused]] int vend)
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*model.instance())>>;
-        if(!model.instance())
+        if (!model.instance())
             model.setInstance(std::make_shared<valueType_t>());
-        jsonObject<valueType_t>::read_sub_kv(std::move(*model.instance()),  std::move(str),  kstart,  kend,  vstart,  vend);
+        jsonObject<valueType_t>::read_sub_kv(std::move(*model.instance()), std::move(str), kstart, kend, vstart, vend);
+    }
+};
+// prismModelListProxy
+template <class T>
+struct jsonArray<T, std::enable_if_t<prism::utilities::is_specialization<T, prism::qt::core::prismModelListProxy>::value,
+                                     void>> : public jsonArrayBase<jsonArray<T>>
+{
+
+    constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int&& level)
+    {
+
+        auto a = value.list()->begin();
+        while (value.list()->size() && a != value.list()->end())
+        {
+            if (a != value.list()->begin())
+            {
+                stream << ',';
+            }
+            if (identation)
+            {
+                if (a != value.list()->begin())
+                    stream << std::endl;
+                for (int i = 0; i < identation * (level); ++i)
+                    stream << " ";
+            }
+            using v_t = typename T::value_type;
+            jsonType<std::shared_ptr<prism::qt::core::prismModelProxy<v_t>>>::type::append_value(stream, nullptr, std::move(*a), identation, std::move(level));
+
+            a++;
+        }
+    }
+
+    constexpr static void read_sub_value(T&& model, std::string_view&& str, int start, int end)
+    {
+        using ft_ = typename T::value_type;
+        std::shared_ptr<ft_> m = std::make_shared<ft_>();
+        model.appendItemNotNotify(m);
+        jsonType<prism::qt::core::prismModelProxy<ft_>>::type::from_jsonStr(*m, std::move(str), start, end);
     }
 };
 
-}// namespace prism::json::privates
+} // namespace prism::json::privates
 
 #endif // PRISMQT_JSON_HPP
