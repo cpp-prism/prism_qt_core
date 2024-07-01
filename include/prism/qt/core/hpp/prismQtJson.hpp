@@ -15,14 +15,63 @@ struct jsonValue<T, std::enable_if_t<std::is_same_v<QString, T>,
 {
     static void append_value(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& qstring, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
     {
-        jsonValue<std::string>::append_value(stream, fname, qstring.toStdString(), identation, std::move(level));
+        std::string  value = qstring.toStdString();
+
+        if (!is_null_string(value))
+        {
+            stream << '"';
+            for (const auto& ch : value)
+            {
+                if (ch == '"')
+                {
+                    stream << "\\\"";
+                }
+                else
+                {
+                    stream << ch;
+                }
+            }
+            stream << '"';
+        }
+        else
+        {
+            stream << "null";
+        }
     }
 
     static void from_jsonStr(T&& model, std::string_view&& str, int start, int end)
     {
-        std::string stdstr;
-        jsonValue<std::string>::from_jsonStr(std::move(stdstr), std::move(str), start, end);
-        model = QString::fromStdString(stdstr);
+        if (str[start] == '"')
+        {
+            bool isEscaped = false;
+            std::string unquotedStr;
+            for (int i = start; i < end; ++i)
+            {
+                auto& c = str[i];
+                if (isEscaped)
+                {
+                    unquotedStr += c;
+                    isEscaped = false;
+                }
+                else if (c == '\\')
+                {
+                    isEscaped = true;
+                }
+                else if (c != '"')
+                {
+                    unquotedStr += c;
+                }
+            }
+            model = QString::fromStdString(unquotedStr);
+        }
+        else if (!(end - start == 3 &&
+                   str[start] == 'n' &&
+                   str[start + 1] == 'u' &&
+                   str[start + 2] == 'l' &&
+                   str[start + 3] == 'l'))
+        {
+            throw R"("c++ type is string, but json str not start with '"' or null")";
+        }
     }
 };
 
@@ -323,7 +372,8 @@ struct jsonArray<T, std::enable_if_t<prism::utilities::is_specialization<T, pris
         using ft_ = typename T::value_type;
         std::shared_ptr<ft_> m = std::make_shared<ft_>();
         model.appendItemNotNotify(m);
-        jsonType<prism::qt::core::prismModelProxy<ft_>>::type::from_jsonStr(*m, std::move(str), start, end);
+        auto lm = model.list()->last();
+        jsonType<prism::qt::core::prismModelProxy<ft_>>::type::from_jsonStr(*lm, std::move(str), start, end);
     }
 };
 
