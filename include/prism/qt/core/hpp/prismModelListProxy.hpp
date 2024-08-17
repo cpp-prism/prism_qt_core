@@ -23,6 +23,11 @@ class PRISMQT_CORE_EXPORT prismModelListProxyBase : public QAbstractListModel
     virtual ~prismModelListProxyBase()
     {
     }
+
+    Q_INVOKABLE virtual void removeItemAt(int i)
+    {
+        Q_UNUSED(i)
+    }
     Q_INVOKABLE virtual QVariant getRowData(int index)
     {
         Q_UNUSED(index)
