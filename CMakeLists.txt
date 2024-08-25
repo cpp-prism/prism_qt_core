@@ -40,6 +40,7 @@ add_library(${PROJECT_NAME} SHARED
     include/prism/qt/core/helper/qeventloopguard.h
     include/prism/qt/core/helper/condition_varaiable_guard.h
     include/prism/qt/core/helper/prismdataaccesslayerbase.h
+    include/prism/qt/core/helper/stopwatch.h
 
     include/prism/qt/core/prismQt_core_global.h
     include/prism/qt/core/prismQt_events.h
@@ -52,6 +53,7 @@ add_library(${PROJECT_NAME} SHARED
     src/helper/imagepainteditemqsg.cpp
     src/helper/sortfilterproxymodel.cpp
     src/helper/prismdataaccesslayerbase.cpp
+    src/helper/stopwatch.cpp
 
     src/prismQt_core.h
     src/prismQt_core.cpp
