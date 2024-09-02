@@ -10,6 +10,16 @@
 #include <QFile>
 #include "../prismQt_core_global.h"
 
+#ifdef PERFORMANCE_TEST
+#define STOPWATCHER(VAR,NAME)  prism::qt::core::StopWatcher VAR(#NAME);
+#define STOPWATCHER_DUMP2FILE  prism::qt::core::StopWatcher::dump2file();
+#else
+#define STOPWATCHER(VAR,NAME)
+#define STOPWATCHER_DUMP2FILE
+#endif
+
+//STOPWATCH(var,name)
+
 namespace prism::qt::core{
 
 #if defined(Q_OS_ANDROID)

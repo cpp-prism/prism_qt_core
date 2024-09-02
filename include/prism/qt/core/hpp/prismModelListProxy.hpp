@@ -236,7 +236,7 @@ class prismModelListProxy : public prismModelListProxyBase
             endRemoveRows();
         }
     }
-    virtual void removeItemAt(int i)
+    virtual void removeItemAt(int i) override
     {
         beginRemoveRows(QModelIndex(), i, i);
         m_list->removeAt(i);
