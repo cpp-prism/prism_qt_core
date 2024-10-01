@@ -2,7 +2,9 @@
 #define PRISM_QT_CORE_PRISMDATAACCESSLAYER_HPP
 
 #include <prism/prismSql.hpp>
+#include <QString>
 #include "../helper/prismdataaccesslayerbase.h"
+#include <QDebug>
 
 namespace prism::qt::core {
 template<class func>
@@ -52,10 +54,13 @@ public:
                                     qDebug() << "================================================================ ";
                                     qDebug() << " exec delete table  [thread:" << quintptr(QThread::currentThreadId()) << "]";
                                     qDebug() << "================================================================ ";
-                                    qDebug().noquote() << sql;
-                                    if(query.exec(sql))
+                                    auto start = std::chrono::high_resolution_clock::now();
+                                    auto ret = query.exec(sql);
+                                    auto end = std::chrono::high_resolution_clock::now();
+                                    int exec_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                                    if(ret)
                                     {
-                                        qDebug()<< "sql exec success";
+                                          qDebug()<< "sql exec success, "  << exec_ms << "ms"<< Qt::endl;
                                     }
                                     else
                                     {
@@ -76,9 +81,13 @@ public:
                                     qDebug() << " exec create table  [thread:" << quintptr(QThread::currentThreadId()) << "]";
                                     qDebug() << "================================================================ ";
                                     qDebug().noquote() << sql;
-                                    if(query.exec(sql))
+                                    auto start = std::chrono::high_resolution_clock::now();
+                                    auto ret = query.exec(sql);
+                                    auto end = std::chrono::high_resolution_clock::now();
+                                    int exec_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                                    if(ret)
                                     {
-                                        qDebug()<< "sql exec success";
+                                          qDebug()<< "sql exec success, "  << exec_ms << "ms"<< Qt::endl;
                                     }
                                     else
                                     {
@@ -100,9 +109,13 @@ public:
                                     qDebug() << " exec insert into table  [thread:" << quintptr(QThread::currentThreadId()) << "]";
                                     qDebug() << "================================================================ ";
                                     qDebug().noquote() << sql;
-                                    if(query.exec(sql))
+                                    auto start = std::chrono::high_resolution_clock::now();
+                                    auto ret = query.exec(sql);
+                                    auto end = std::chrono::high_resolution_clock::now();
+                                    int exec_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                                    if(ret)
                                     {
-                                        qDebug()<< "sql exec success";
+                                          qDebug()<< "sql exec success, "  << exec_ms << "ms"<< Qt::endl;
                                     }
                                     else
                                     {
@@ -125,7 +138,11 @@ public:
                       qDebug() << " exec query table  [thread:" << quintptr(QThread::currentThreadId()) << "]";
                       qDebug() << "================================================================ ";
                       qDebug().noquote() << sql;
-                      if(query.exec(sql))
+                      auto start = std::chrono::high_resolution_clock::now();
+                      auto ret = query.exec(sql);
+                      auto end = std::chrono::high_resolution_clock::now();
+                      int exec_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+                      if(ret)
                       {
 
                           int size =0;
@@ -136,7 +153,7 @@ public:
                               query.previous();
                           }
                           result->reserve(size);
-                          qDebug()<< "sql exec success, size:" << size;
+                          qDebug()<< "sql exec success, size:" << size  << " "  << exec_ms << "ms"<< Qt::endl;
                           //if(query.size()>=0)// sqlite not support .size(),but mysql
                           if(size>0)
                           {
@@ -157,18 +174,34 @@ public:
                                       if(!datatype.has_value())
                                           qDebug()<< QString("filed: %1 hadn't config sql datatype").arg(fname);
 
-                                      if(!std::strcmp(datatype.value() , "TEXT"))
+                                      if constexpr(prism::utilities::has_def<prism::enums::enum_info<v_t>>::value)
                                       {
-                                          if constexpr (std::is_same_v<std::string,v_t>)
+                                          if(!std::strcmp(datatype.value() , "TEXT"))
                                           {
-                                              value = query.value(i).value<QString>().toStdString();
+                                              value =  prism::enums::enum_info<v_t>::fromstring(query.value(i).toString().toStdString().c_str());
                                           }
+                                          else
+                                          {
+                                              value =  (v_t)query.value(i).toInt();
+
+                                          }
+                                      }
+                                      else if constexpr (std::is_same_v<QString,v_t>)
+                                      {
+                                          value = query.value(i).value<QString>();
+                                      }
+                                      else if constexpr (std::is_same_v<std::string,v_t>)
+                                      {
+                                          value = query.value(i).value<QString>().toStdString();
                                       }
                                       else
                                       {
-                                          std::stringstream ss;
-                                          ss << query.value(i).toString().toStdString();
-                                          ss >> value;
+                                          if(std::strcmp(datatype.value() , "TEXT"))
+                                          {
+                                              std::stringstream ss;
+                                              ss << query.value(i).toString().toStdString();
+                                              ss >> value;
+                                          }
                                       }
                                       ++i ;
                                   });
@@ -186,5 +219,7 @@ public:
 };
 
 } //namespace prism::qt::core
+
+PRISM_FIELDTYPE_DEFAULT_ATTRIBUTE(::prism::sql::sqlite3::attributes::Attr_sql_field_datatype , QString   , "TEXT")
 
 #endif // PRISM_QT_CORE_PRISMDATAACCESSLAYER_HPP

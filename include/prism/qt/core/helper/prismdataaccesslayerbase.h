@@ -6,6 +6,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
+#include <QEventLoop>
 #include "../prismQt_core_global.h"
 
 namespace prism::qt::core {
@@ -36,7 +37,7 @@ class PRISMQT_CORE_EXPORT prismDataAccessLayerBase:public QObject
     QString database_;
 
 private slots:
-    void run_logic([[maybe_unused]]Sql_logic_base* sql_logic,std::condition_variable* el,bool* result);
+    void run_logic([[maybe_unused]]Sql_logic_base* sql_logic,QEventLoop* el,bool* result);
 
 public:
     explicit prismDataAccessLayerBase(QString dbtype,QString cachName,QString database="",QString ip="",QString username="",QString pwd="" );

@@ -1,5 +1,5 @@
 #include "../../include/prism/qt/core/helper/prismdataaccesslayerbase.h"
-#include "../../include/prism/qt/core/helper/condition_varaiable_guard.h"
+#include "../../include/prism/qt/core/helper/qeventloopguard.h"
 #include <QDebug>
 #include <QObject>
 #include <thread>
@@ -74,8 +74,8 @@ void prism::qt::core::prismDataAccessLayerBase::clearup() {
     }
 }
 
-void prism::qt::core::prismDataAccessLayerBase::run_logic(Sql_logic_base *sql_logic, std::condition_variable *el, bool *result) {
-    ::prism::qt::core::condition_varaiable_guard raii(el);
+void prism::qt::core::prismDataAccessLayerBase::run_logic(Sql_logic_base *sql_logic, QEventLoop *el, bool *result) {
+    ::prism::qt::core::QEventLoopGuard raii(el);
     auto db = getDb(dbtype_,cacheName_,ip_,userName_,pwd_,database_);
     if(validDb(db))
     {
@@ -102,9 +102,7 @@ prism::qt::core::prismDataAccessLayerBase::~prismDataAccessLayerBase() { clearup
 
 bool prism::qt::core::prismDataAccessLayerBase::run(Sql_logic_base &&sql_logic)
 {
-    std::mutex mux;
-    std::unique_lock<std::mutex> lk(mux);
-    std::condition_variable cv;
+    QEventLoop el;
 
     bool result = true;
 
@@ -112,11 +110,11 @@ bool prism::qt::core::prismDataAccessLayerBase::run(Sql_logic_base &&sql_logic)
                                       ,"run_logic"
                                       ,Qt::QueuedConnection
                                       ,Q_ARG(Sql_logic_base*,&sql_logic)
-                                      ,Q_ARG(std::condition_variable*,&cv)
+                                      ,Q_ARG(QEventLoop*,&el)
                                       ,Q_ARG(bool*,&result)
                                       );
 
-    cv.wait(lk);
+    el.exec();
     return result;
 }
 
