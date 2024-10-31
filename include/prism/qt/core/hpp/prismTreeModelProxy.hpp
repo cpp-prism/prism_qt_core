@@ -112,7 +112,7 @@ public:
         Q_UNUSED(parent)
         QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
     }
-    ~prismTreeModelProxy() {}
+    virtual ~prismTreeModelProxy() {}
     QVariant getRowData(const QModelIndex& index) override
     {
         if(index.isValid())
