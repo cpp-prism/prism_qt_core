@@ -35,6 +35,8 @@ public:
         for(std::shared_ptr<prismTreeNodeProxy<T>> item : node->childItems())
         {
             result |= recurseNodePredict(item.get(),lambda);
+            if(result)
+                return result;
         }
         return result |= lambda(node);
     }

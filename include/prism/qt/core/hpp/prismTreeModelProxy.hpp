@@ -51,6 +51,20 @@ private:
         func(node);
 
     }
+    void privatee_recurseNodeDo2(std::shared_ptr<prismTreeNodeProxy<T>> node,std::function<void(std::shared_ptr<prismTreeNodeProxy<T>>)>&& func)
+    {
+        if(!node)
+            return;
+        func(node);
+        if(node->childCount())
+        {
+            for(std::shared_ptr<prismTreeNodeProxy<T>> child: node->childItems())
+            {
+                privatee_recurseNodeDo(child,std::move(func));
+            }
+        }
+
+    }
 
     QVariant getRootNode() override
     {
@@ -372,6 +386,14 @@ public:
         if(rootNode())
         {
             privatee_recurseNodeDo(rootNode(),std::move(func));
+        }
+
+    }
+    void recurseNodeDo2(std::function<void(std::shared_ptr<prismTreeNodeProxy<T>>)>&& func)
+    {
+        if(rootNode())
+        {
+            privatee_recurseNodeDo2(rootNode(),std::move(func));
         }
 
     }
