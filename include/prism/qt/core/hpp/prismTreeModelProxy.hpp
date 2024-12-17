@@ -60,7 +60,7 @@ private:
         {
             for(std::shared_ptr<prismTreeNodeProxy<T>> child: node->childItems())
             {
-                privatee_recurseNodeDo(child,std::move(func));
+                privatee_recurseNodeDo2(child,std::move(func));
             }
         }
 
@@ -124,6 +124,8 @@ public:
     explicit prismTreeModelProxy<T>(QObject *parent = nullptr)
     {
         Q_UNUSED(parent)
+        std::shared_ptr<prismTreeNodeProxy<T>> root = std::make_shared<prismTreeNodeProxy<T>>();
+        this->setRootNode(root);
         QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
     }
     virtual ~prismTreeModelProxy() {}
@@ -159,6 +161,7 @@ public:
     }
     void recoverRelationship(std::shared_ptr<prismTreeNodeProxy<T>> node)
     {
+        QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
         for(std::shared_ptr<prismTreeNodeProxy<T>> child: node->m_childItems)
         {
             QQmlEngine::setObjectOwnership(child.get(),QQmlEngine::ObjectOwnership::CppOwnership);
