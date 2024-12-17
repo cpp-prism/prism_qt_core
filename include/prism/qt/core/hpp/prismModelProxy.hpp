@@ -212,6 +212,37 @@ constexpr inline bool set_field_do(QList<const char*>& fns, TV& p_v, QVariant& v
     using model_t = std::remove_reference_t<decltype(p_v)>;
     if (fns.length() == 0)
     {
+        if constexpr (std::is_same_v<QVariant,model_t>)
+        {
+            if(p_v.userType() == QMetaType::Bool)
+                p_v =QVariant::fromValue(value.value<bool>());
+            else if(p_v.userType() == QMetaType::Short)
+                p_v =QVariant::fromValue(value.value<int16_t>());
+            else if(p_v.userType() == QMetaType::UShort)
+                p_v =QVariant::fromValue(value.value<uint16_t>());
+            else if(p_v.userType() == QMetaType::Int)
+                p_v = QVariant::fromValue(value.value<int32_t>()) ;
+            else if(p_v.userType() == QMetaType::UInt)
+                p_v = QVariant::fromValue(value.value<uint32_t>()) ;
+            else if(p_v.userType() == QMetaType::Long)
+                p_v = QVariant::fromValue(value.value<int64_t>());
+            else if(p_v.userType() == QMetaType::ULong)
+                p_v = QVariant::fromValue(value.value<uint64_t>()) ;
+            else if(p_v.userType() == QMetaType::Float)
+                p_v = QVariant::fromValue(value.value<float>());
+            else if(p_v.userType() == QMetaType::Double)
+                p_v = QVariant::fromValue(value.value<double>()) ;
+            else if(p_v.userType() == QMetaType::QString)
+                p_v = QVariant::fromValue(value.value<QString>()) ;
+            else
+            if(value != p_v)
+            {
+                p_v = value;
+                return true;
+            }
+            return true;
+
+        }
         if (!value.canConvert<model_t>())
         {
             qDebug() << "设置值失败,类型错误,不能把" << value << QString("设置给[%1]类型的变量").arg(QString::fromStdString(std::string(utilities::typeName<decltype(p_v)>::name())));
