@@ -315,6 +315,24 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, pri
         }
     };
 };
+// prismEnumProxy
+template <class T>
+struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, qt::core::prismEnumProxy>::value,
+                                      void>> : public jsonObjectBase<jsonObject<T>>
+{
+
+    using jsonObjectBase<jsonObject<T>>::alias_map_;
+    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    {
+        jsonObject<qt::core::prismEnumProxyBase> ::append_sub_kvs(stream,fname, std::move(value),identation, std::move(level));
+    }
+
+    static void read_sub_kv([[maybe_unused]] T&& model, [[maybe_unused]] std::string_view&& str, [[maybe_unused]] int kstart, [[maybe_unused]] int kend, [[maybe_unused]] int vstart, [[maybe_unused]] int vend)
+    {
+        jsonObject<qt::core::prismEnumProxyBase> ::read_sub_kv(std::move(model), std::move(str), kstart, kend,  vstart,vend);
+        model.setValue(model.value());
+    }
+};
 
 // prismModelProxy
 template <class T>

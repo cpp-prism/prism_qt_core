@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <prism/prism.hpp>
+#include <prism/prismJson.hpp>
 #include <QQmlEngine>
 namespace prism::qt::core{
 
@@ -147,5 +148,10 @@ public:
 
 
 } //namespace prism::qt::core
+
+PRISM_FIELD_ATTRIBUTE(prism::json::attributes::Attr_json_alias,&qt::core::prismEnumProxyBase::m_options, "options")
+PRISM_FIELD_ATTRIBUTE(prism::json::attributes::Attr_json_alias,&qt::core::prismEnumProxyBase::m_value, "value")
+PRISM_FIELD_ATTRIBUTE(prism::json::attributes::Attr_json_alias,&qt::core::prismEnumProxyBase::m_valueStr, "valueStr")
+PRISM_FIELDS(qt::core::prismEnumProxyBase,/*m_options,*/m_valueStr,m_value)
 
 #endif // PRISMENUMPROXY_HPP
