@@ -150,6 +150,14 @@ void SortFilterProxyModel::componentComplete()
         QSortFilterProxyModel::setSortRole(roleKey(m_sortRole));
     if (!m_filterRole.isEmpty())
         QSortFilterProxyModel::setFilterRole(roleKey(m_filterRole));
+
+}
+
+void SortFilterProxyModel::sortEx()
+{
+    this->sort(0,Qt::AscendingOrder);
+    this->invalidateFilter();
+    this->invalidate();
 }
 
 int SortFilterProxyModel::roleKey(const QByteArray &role) const

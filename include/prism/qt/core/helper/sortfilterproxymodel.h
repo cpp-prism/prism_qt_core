@@ -125,6 +125,8 @@ public:
 
 signals:
     void countChanged();
+public slots:
+    void sortEx();
 
 protected:
     int roleKey(const QByteArray &role) const;
