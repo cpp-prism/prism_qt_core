@@ -161,12 +161,15 @@ public:
     }
     void recoverRelationship(std::shared_ptr<prismTreeNodeProxy<T>> node)
     {
-        QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
-        for(std::shared_ptr<prismTreeNodeProxy<T>> child: node->m_childItems)
+        if(node)
         {
-            QQmlEngine::setObjectOwnership(child.get(),QQmlEngine::ObjectOwnership::CppOwnership);
-            child->setParentItem(node);
-            recoverRelationship(child);
+            QQmlEngine::setObjectOwnership(this,QQmlEngine::ObjectOwnership::CppOwnership);
+            for(std::shared_ptr<prismTreeNodeProxy<T>> child: node->m_childItems)
+            {
+                QQmlEngine::setObjectOwnership(child.get(),QQmlEngine::ObjectOwnership::CppOwnership);
+                child->setParentItem(node);
+                recoverRelationship(child);
+            }
         }
     }
     std::shared_ptr<prismTreeNodeProxy<T>> rootNode()const
