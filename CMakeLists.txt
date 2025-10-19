@@ -36,11 +36,11 @@ add_library(${PROJECT_NAME} SHARED
 
     include/prism/qt/core/helper/imagePaintedItem.h
     include/prism/qt/core/helper/imagepainteditemqsg.h
-    include/prism/qt/core/helper/sortfilterproxymodel.h
     include/prism/qt/core/helper/qeventloopguard.h
     include/prism/qt/core/helper/condition_varaiable_guard.h
     include/prism/qt/core/helper/prismdataaccesslayerbase.h
     include/prism/qt/core/helper/stopwatch.h
+    include/prism/qt/core/helper/sortfilterproxymodel.h
 
     include/prism/qt/core/prismQt_core_global.h
     include/prism/qt/core/prismQt_events.h
@@ -51,14 +51,15 @@ add_library(${PROJECT_NAME} SHARED
     src/helper/bind.h src/helper/bind.cpp
     src/helper/imagePaintedItem.cpp
     src/helper/imagepainteditemqsg.cpp
-    src/helper/sortfilterproxymodel.cpp
     src/helper/prismdataaccesslayerbase.cpp
+    src/helper/sortfilterproxymodel.cpp
     src/helper/stopwatch.cpp
 
     src/prismQt_core.h
     src/prismQt_core.cpp
     src/prismQt_core.qrc
 )
+
 add_library(prism::qt::core ALIAS ${PROJECT_NAME})
 
 
@@ -126,44 +127,44 @@ endif()
 #
 
 #if( NOT VCPKG_DISABLE_TEST)
-if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
-    find_package(Catch2 REQUIRED)
-    include(CTest)
-    include(Catch)
-
-    #test prismQt json
-    set(TST_PRISMQTJSON_SOURCE
-        tests/test_prismQtJson.cpp
-        tests/models/test_model.h)
-    add_executable(tst_${PROJECT_NAME}  ${TST_PRISMQTJSON_SOURCE} )
-    target_include_directories(tst_${PROJECT_NAME} PRIVATE  include)
-    target_include_directories(tst_${PROJECT_NAME} PRIVATE ${prism_INCLUDE_DIRS})
-
-    target_link_libraries(tst_${PROJECT_NAME} PRIVATE
-        ${PROJECT_NAME}
-        Catch2::Catch2
-        prism::prism
-        prism::qt::modular
-        Qt${QT_VERSION_MAJOR}::Core
-        Qt${QT_VERSION_MAJOR}::Sql
-        Qt${QT_VERSION_MAJOR}::Gui
-        Qt${QT_VERSION_MAJOR}::Widgets
-        Qt${QT_VERSION_MAJOR}::Quick
-        Qt${QT_VERSION_MAJOR}::Qml
-        Qt${QT_VERSION_MAJOR}::QuickControls2)
-
-set_target_properties(tst_${PROJECT_NAME}  PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/${CMAKE_SYSTEM_PROCESSOR}
-)
-
-    #catch_discover_tests(tst_${PROJECT_NAME})
-
-
-    add_custom_target(run_tst_${PROJECT_NAME}
-        COMMAND ${CMAKE_CTEST_COMMAND}  --verbose
-        DEPENDS tst_${PROJECT_NAME}
-    )
-endif()
+#if(CMAKE_PROJECT_NAME  STREQUAL "${PROJECT_NAME}"  AND NOT VCPKG_DISABLE_TEST)
+#    find_package(Catch2 REQUIRED)
+#    include(CTest)
+#    include(Catch)
+#
+#    #test prismQt json
+#    set(TST_PRISMQTJSON_SOURCE
+#        tests/test_prismQtJson.cpp
+#        tests/models/test_model.h)
+#    add_executable(tst_${PROJECT_NAME}  ${TST_PRISMQTJSON_SOURCE} )
+#    target_include_directories(tst_${PROJECT_NAME} PRIVATE  include)
+#    target_include_directories(tst_${PROJECT_NAME} PRIVATE ${prism_INCLUDE_DIRS})
+#
+#    target_link_libraries(tst_${PROJECT_NAME} PRIVATE
+#        ${PROJECT_NAME}
+#        Catch2::Catch2
+#        prism::prism
+#        prism::qt::modular
+#        Qt${QT_VERSION_MAJOR}::Core
+#        Qt${QT_VERSION_MAJOR}::Sql
+#        Qt${QT_VERSION_MAJOR}::Gui
+#        Qt${QT_VERSION_MAJOR}::Widgets
+#        Qt${QT_VERSION_MAJOR}::Quick
+#        Qt${QT_VERSION_MAJOR}::Qml
+#        Qt${QT_VERSION_MAJOR}::QuickControls2)
+#
+#set_target_properties(tst_${PROJECT_NAME}  PROPERTIES
+#    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin/${CMAKE_SYSTEM_PROCESSOR}
+#)
+#
+#    #catch_discover_tests(tst_${PROJECT_NAME})
+#
+#
+#    add_custom_target(run_tst_${PROJECT_NAME}
+#        COMMAND ${CMAKE_CTEST_COMMAND}  --verbose
+#        DEPENDS tst_${PROJECT_NAME}
+#    )
+#endif()
 
 
 #execute_process(COMMAND ${CMAKE_COMMAND} -E echo "

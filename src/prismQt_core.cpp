@@ -34,16 +34,9 @@ bool prismQt_core::register_types()
     qRegisterMetaType<Sql_logic_base*>("Sql_logic_base*");
     qRegisterMetaType<bool*>("bool*");
 
-    //注册单例 到qml engine  qt 5.15的语法
-    //qmlRegisterSingletonInstance<prismBind>("prismCpp", 1, 0, "Bind", new prismBind());
-    //注册单例 到qml engine  qt 5.12的  5.15亦可语法
-    qmlRegisterSingletonType<prismBind>("prismCpp",1,0 ,"Bind",[](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
-            Q_UNUSED(engine)
-            Q_UNUSED(scriptEngine)
-            return  new prismBind();
-    });
+    qmlRegisterSingletonInstance<prismBind>("PrismCpp", 1, 0, "Bind", new prismBind());
 
-    qmlRegisterType<SortFilterProxyModel>("prismCpp", 1, 0, "SortFilterProxyModelCpp");
+    qmlRegisterType<SortFilterProxyModel>("PrismCpp", 1, 0, "SortFilterProxyModelCpp");
 
     return true;
 }

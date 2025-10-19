@@ -14,7 +14,6 @@ Q_DECLARE_METATYPE(std::string*)
 Q_DECLARE_METATYPE(std::shared_ptr<std::string>)
 Q_DECLARE_METATYPE(const char*)
 Q_DECLARE_METATYPE(QList<std::string>)
-Q_DECLARE_METATYPE(QVector<std::string>)
 Q_DECLARE_METATYPE(std::list<std::string>)
 Q_DECLARE_METATYPE(std::vector<std::string>)
 Q_DECLARE_METATYPE(std::vector<std::string>*)
@@ -63,7 +62,6 @@ Q_DECLARE_METATYPE(Class*)                  \
 Q_DECLARE_METATYPE(std::stdoptional<Class>) \
 Q_DECLARE_METATYPE(std::shared_ptr<Class>)  \
 Q_DECLARE_METATYPE(std::list<Class>)        \
-Q_DECLARE_METATYPE(QList<Class>)            \
 Q_DECLARE_METATYPE(std::vector<Class>)      \
 Q_DECLARE_METATYPE(QVector<Class>)\
 Q_DECLARE_METATYPE(prism::qt::core::prismEnumProxy<Class>*)                 \
@@ -76,7 +74,6 @@ Q_DECLARE_METATYPE(Class*)                  \
 Q_DECLARE_METATYPE(std::stdoptional<Class>) \
 Q_DECLARE_METATYPE(std::shared_ptr<Class>)  \
 Q_DECLARE_METATYPE(std::list<Class>)        \
-Q_DECLARE_METATYPE(QList<Class>)            \
 Q_DECLARE_METATYPE(std::vector<Class>)      \
 Q_DECLARE_METATYPE(QVector<Class>)\
 Q_DECLARE_METATYPE(prism::qt::core::prismModelProxy<Class>*)                 \

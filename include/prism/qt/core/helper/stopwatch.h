@@ -22,16 +22,13 @@
 
 namespace prism::qt::core{
 
-#if defined(Q_OS_ANDROID)
-    using time_point_t = std::chrono::steady_clock::time_point ;
+#if defined(Q_OS_ANDROID) || defined(Q_OS_MAC) || defined(Q_OS_WIN)
+using time_point_t = std::chrono::steady_clock::time_point;
 #elif defined(Q_OS_LINUX)
-    using time_point_t = std::chrono::system_clock::time_point ;
-#elif defined(WIN32MSVC)
-    using time_point_t = std::chrono::steady_clock::time_point ;
-#elif defined(WIN32GPP)
-    using time_point_t = std::chrono::system_clock::time_point ;
-#elif defined(Q_OS_MAC)
-    using time_point_t = std::chrono::steady_clock::time_point ;
+using time_point_t = std::chrono::system_clock::time_point;
+#else
+// fallback
+using time_point_t = std::chrono::steady_clock::time_point;
 #endif
 
 /**

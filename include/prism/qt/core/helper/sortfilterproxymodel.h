@@ -1,63 +1,32 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+/**
+ *  // qml example
+    SortFilterProxyModel {
+        id: proxyModel
+        source: personModel
+
+        sortRole: "age"
+        filterRole: "name"
+        filterString: filterField.text
+        sortOrder: Qt.AscendingOrder
+    }
+ */
 
 #ifndef PRISM_QT_COER_HELPER_SORTFILTERPROXYMODEL_H
 #define PRISM_QT_COER_HELPER_SORTFILTERPROXYMODEL_H
 
 #include "../hpp/prismModelListProxy.hpp"
 #include "../prismQt_core_global.h"
-#include "sortfilterproxymodel.h"
+
 #include <QtCore/qsortfilterproxymodel.h>
 #include <QtQml/qjsvalue.h>
 #include <QtQml/qqmlparserstatus.h>
 
+// Qt5 和 Qt6 的兼容处理
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QtCore/QRegularExpression>
+#else
+    #include <QtCore/QRegExp>
+#endif
 
 namespace prism::qt::core {
 
@@ -79,19 +48,25 @@ class PRISMQT_CORE_EXPORT SortFilterProxyModel : public QSortFilterProxyModel, p
     Q_ENUMS(FilterSyntax)
 
 public:
-    explicit SortFilterProxyModel(QObject *parent = 0);
+    explicit SortFilterProxyModel(QObject *parent = nullptr);
 
     Q_INVOKABLE QVariant getRowData(int index)
     {
-        return QVariant::fromValue( *reinterpret_cast<prismModelListProxyBase**>( this->index(index,0).internalPointer()));
+        return QVariant::fromValue(
+            *reinterpret_cast<prismModelListProxyBase**>(
+                this->index(index, 0).internalPointer()));
     }
+
     Q_INVOKABLE QVariant getRowData(QModelIndex index)
     {
-        return QVariant::fromValue( *reinterpret_cast<prismModelListProxyBase**>( this->index(index.row(),0).internalPointer()));
+        return QVariant::fromValue(
+            *reinterpret_cast<prismModelListProxyBase**>(
+                this->index(index.row(), 0).internalPointer()));
     }
+
     Q_INVOKABLE int transIndex2sourceIndex(int index)
     {
-        return this->mapToSource(this->index(index,0)).row();
+        return this->mapToSource(this->index(index, 0)).row();
     }
 
     QObject *source() const;
@@ -120,24 +95,26 @@ public:
     int count() const;
     Q_INVOKABLE QJSValue get(int index) const;
 
-    void classBegin();
-    void componentComplete();
+    void classBegin() override;
+    void componentComplete() override;
 
 signals:
     void countChanged();
+
 public slots:
     void sortEx();
 
 protected:
     int roleKey(const QByteArray &role) const;
-    QHash<int, QByteArray> roleNames() const;
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    QHash<int, QByteArray> roleNames() const override;
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
 private:
     bool m_complete;
     QByteArray m_sortRole;
     QByteArray m_filterRole;
 };
-}// namespace prism::qt::core
+
+} // namespace prism::qt::core
 
 #endif // PRISM_QT_COER_HELPER_SORTFILTERPROXYMODEL_H

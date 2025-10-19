@@ -12,7 +12,6 @@
 namespace prism::qt::core
 {
 
-#if defined(__linux) || defined(__clang__)
 template <class TV>
 constexpr inline void get_field_do(QList<const char*>& fns, TV& p_v, QVariant& qv);
 template <class TV>
@@ -21,7 +20,6 @@ template <class TV>
 constexpr inline bool recurseSetValue(QList<const char*>& fns, TV& p_v, QVariant& value);
 template <class TV>
 constexpr inline void recurseGetValue(QList<const char*>& fns, TV& p_v, QVariant& qv);
-#endif
 
 template <class T>
 struct has_def_indexer

@@ -43,8 +43,12 @@ void StopWatcher::dump2file()
     if (file.open(QIODevice::ReadWrite))
     {
         QTextStream stream(&file);
-        stream.setCodec("UTF-8");
-        stream << QString::fromStdString(prism::json::toJsonString(getEntries(),4));
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    stream.setCodec("UTF-8");
+#else
+    stream.setEncoding(QStringConverter::Utf8);
+#endif
     }
     qDebug()<< "traces had save:" << getEntries().size();
 }

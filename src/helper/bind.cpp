@@ -1,4 +1,5 @@
 #include "bind.h"
+#include <prism/container.hpp>
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4996)
@@ -15,11 +16,18 @@ QJSValue prismBind::create(const QJSValue obj, const QString &expr)
 {
     QString placehold = "prism_obj?(prism_obj.notifyFlag? prism_obj.get('$props$'):prism_obj.get('$props$')):null";
     QJSValue result ;
-    if(obj.engine())
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    auto engine = obj.engine();
+#else
+    QJSEngine* engine = qjsEngine(this);
+#endif
+
+    if(engine)
     {
         try{
-            obj.engine()->globalObject().setProperty("prism_obj",obj);
-            result = obj.engine()->evaluate(placehold.replace("$props$", expr));
+            engine->globalObject().setProperty("prism_obj",obj);
+            result = engine->evaluate(placehold.replace("$props$", expr));
         }
         catch(...)
         {
