@@ -38,6 +38,7 @@ class PRISMQT_CORE_EXPORT prismModelListProxyBase : public QAbstractListModel
         Q_UNUSED(index)
         return QVariant();
     }
+
     int size()
     {
         return this->length();
@@ -205,6 +206,12 @@ class prismModelListProxy : public prismModelListProxyBase
             });
         }
         return names;
+    }
+    virtual void insertItem(int idx,std::shared_ptr<T> tm)
+    {
+        beginInsertRows(QModelIndex(), idx, idx);
+        m_list->insert(idx,std::make_shared<prismModelProxy<T>>(this, tm));
+        endInsertRows();
     }
     virtual void appendItem(std::shared_ptr<T> tm)
     {
