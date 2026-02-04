@@ -9,7 +9,6 @@
 #include <QList>
 #include <QVariant>
 
-Q_DECLARE_METATYPE(std::string)
 Q_DECLARE_METATYPE(std::string*)
 Q_DECLARE_METATYPE(std::shared_ptr<std::string>)
 Q_DECLARE_METATYPE(const char*)
@@ -20,7 +19,6 @@ Q_DECLARE_METATYPE(std::vector<std::string>*)
 Q_DECLARE_METATYPE(std::shared_ptr<std::vector<std::string>>)
 Q_DECLARE_METATYPE(bool*)
 Q_DECLARE_METATYPE(std::shared_ptr<bool>)
-Q_DECLARE_METATYPE(std::stdoptional<bool>)
 Q_DECLARE_METATYPE(std::vector<bool>)
 Q_DECLARE_METATYPE(std::vector<bool>*)
 Q_DECLARE_METATYPE(std::shared_ptr<std::vector<bool>>)
