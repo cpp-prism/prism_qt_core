@@ -1,10 +1,9 @@
 {
   "name": "prism-qt-core",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "port-version": 1,
   "description": "prism qt core",
   "homepage": "https://github.com/cpp-prism/prism_qt_core",
-  "supports": "(windows & !arm & !uwp) | osx | (linux & !arm)",
   "dependencies": [
     "catch2",
     "prism",
