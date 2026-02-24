@@ -13,7 +13,7 @@ template <class T>
 struct jsonValue<T, std::enable_if_t<std::is_same_v<QString, T>,
                                      void>> : public jsonValueBase<jsonValue<T>>
 {
-    static void append_value(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& qstring, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    static void append_value(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& qstring, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         std::string  value = qstring.toStdString();
 
@@ -75,48 +75,13 @@ struct jsonValue<T, std::enable_if_t<std::is_same_v<QString, T>,
     }
 };
 
-// extend QStringList
-template <class T>
-struct jsonArray<T, std::enable_if_t<std::is_same_v<QStringList, T>,
-                                     void>> : public jsonArrayBase<jsonArray<T>>
-{
-    constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int&& level)
-    {
-        auto a = value.begin();
-        while (value.size() && a != value.end())
-        {
-            if (a != value.begin())
-            {
-                stream << ',';
-            }
-            if (identation)
-            {
-                if (a != value.begin())
-                    stream << std::endl;
-                for (int i = 0; i < identation * (level); ++i)
-                    stream << " ";
-            }
-            using v_t = typename T::value_type;
-            jsonType<v_t>::type::append_value(stream, nullptr, std::move(*a), identation, std::move(level));
-
-            a++;
-        }
-    }
-
-    constexpr static void read_sub_value(T&& model, std::string_view&& str, int start, int end)
-    {
-        using ft_ = typename T::value_type;
-        model.push_back({});
-        jsonType<ft_>::type::from_jsonStr(std::move(model.last()), std::move(str), start, end);
-    }
-};
 // extend QList QVector
 template <class T>
 struct jsonArray<T, std::enable_if_t<prism::utilities::is_specialization<T, QVector>::value ||
                                          prism::utilities::is_specialization<T, QList>::value,
                                      void>> : public jsonArrayBase<jsonArray<T>>
 {
-    constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int&& level)
+    constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int level)
     {
         auto a = value.begin();
         while (value.size() && a != value.end())
@@ -142,7 +107,7 @@ struct jsonArray<T, std::enable_if_t<prism::utilities::is_specialization<T, QVec
     constexpr static void read_sub_value(T&& model, std::string_view&& str, int start, int end)
     {
         using ft_ = typename T::value_type;
-        model.append({});
+        model.append(ft_{});
         jsonType<ft_>::type::from_jsonStr(std::move(model.last()), std::move(str), start, end);
     }
 };
@@ -152,7 +117,7 @@ template <class T>
 struct jsonValue<T, std::enable_if_t<std::is_same_v<T, QDateTime>,
                                      void>> : public jsonValueBase<jsonValue<T>>
 {
-    constexpr static void append_value(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    constexpr static void append_value(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         stream << '"';
         stream << value.toString("yyyy-MM-ddTHH:mm:ssZ").toStdString();
@@ -196,7 +161,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, QMa
                                           prism::utilities::is_specialization<T, QHash>::value,
                                       void>> : public jsonObjectBase<jsonObject<T>>
 {
-    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         int count = 0;
         QKeyValueIterator it = value.keyValueBegin();
@@ -233,7 +198,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, pri
 {
     constexpr static inline const char* childitems_name = "childItems";
 
-    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
         int count = 0;
@@ -291,7 +256,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, pri
 {
     static inline const char* rootNodeName = "rootNode";
 
-    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.rootNode()->instance())>>;
         for (int i = 0; i < identation * (level); ++i)
@@ -322,7 +287,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, qt:
 {
 
     using jsonObjectBase<jsonObject<T>>::alias_map_;
-    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         jsonObject<qt::core::prismEnumProxyBase> ::append_sub_kvs(stream,fname, std::move(value),identation, std::move(level));
     }
@@ -341,7 +306,7 @@ struct jsonObject<T, std::enable_if_t<prism::utilities::is_specialization<T, pri
 {
 
     using jsonObjectBase<jsonObject<T>>::alias_map_;
-    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int&& level)
+    constexpr static void append_sub_kvs([[maybe_unused]] std::ostringstream& stream, [[maybe_unused]] const char* fname, [[maybe_unused]] T&& value, [[maybe_unused]] int identation, [[maybe_unused]] int level)
     {
         using valueType_t = std::remove_reference_t<std::remove_reference_t<decltype(*value.instance())>>;
         jsonObject<valueType_t>::append_sub_kvs(stream, fname, std::move(*value.instance()), identation, std::move(level));
@@ -361,7 +326,7 @@ struct jsonArray<T, std::enable_if_t<prism::utilities::is_specialization<T, pris
                                      void>> : public jsonArrayBase<jsonArray<T>>
 {
 
-    constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int&& level)
+    constexpr static void append_sub_values(std::ostringstream& stream, [[maybe_unused]] const char* fname, T&& value, int identation, int level)
     {
 
         auto a = value.list()->begin();

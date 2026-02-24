@@ -152,6 +152,6 @@ public:
 PRISM_FIELD_ATTRIBUTE(prism::json::attributes::Attr_json_alias,&qt::core::prismEnumProxyBase::m_options, "options")
 PRISM_FIELD_ATTRIBUTE(prism::json::attributes::Attr_json_alias,&qt::core::prismEnumProxyBase::m_value, "value")
 PRISM_FIELD_ATTRIBUTE(prism::json::attributes::Attr_json_alias,&qt::core::prismEnumProxyBase::m_valueStr, "valueStr")
-PRISM_FIELDS(qt::core::prismEnumProxyBase,/*m_options,*/m_valueStr,m_value)
+PRISM_FIELDS(qt::core::prismEnumProxyBase,m_options,m_valueStr,m_value)
 
 #endif // PRISMENUMPROXY_HPP
